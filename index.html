@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRAFTNOTE — Mantes-la-Jolie</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <section id="home" class="card home-card">
+      <h1>CRAFTNOTE</h1>
+      <p>Mantes-la-Jolie</p>
+      <div class="actions">
+        <button data-open="login-eleve">Session élève</button>
+        <button data-open="login-prof">Session professeur</button>
+      </div>
+    </section>
+
+    <section id="login-eleve" class="card hidden">
+      <button class="back" data-back>← Retour</button>
+      <h2>Session élève</h2>
+      <p class="muted">Connecte-toi pour consulter tes informations.</p>
+      <input id="eleve-identifiant" placeholder="Identifiant" autocomplete="off">
+      <input id="eleve-motdepasse" type="password" placeholder="Mot de passe">
+      <button id="eleve-connexion">Se connecter</button>
+      <p class="hint">Démo : leo / demo</p>
+    </section>
+
+    <section id="login-prof" class="card hidden">
+      <button class="back" data-back>← Retour</button>
+      <h2>Session professeur</h2>
+      <p class="muted">Connecte-toi pour gérer les dossiers scolaires.</p>
+      <input id="prof-identifiant" placeholder="Identifiant" autocomplete="off">
+      <input id="prof-motdepasse" type="password" placeholder="Mot de passe">
+      <button id="prof-connexion">Se connecter</button>
+      <p class="hint">Démo : prof / demo</p>
+    </section>
+
+    <section id="eleve" class="card hidden">
+      <div class="topline"><h2>Espace élève</h2><button class="small" data-home>Déconnexion</button></div>
+      <p class="muted">Bienvenue Léo Bernard</p>
+      <div class="grid">
+        <button data-page="notes-eleve">Mes notes</button>
+        <button data-page="emploi">Emploi du temps</button>
+        <button data-page="avertissements-eleve">Mes avertissements</button>
+        <button data-page="sanctions-eleve">Mes sanctions</button>
+      </div>
+      <div id="eleve-result" class="result"></div>
+    </section>
+
+    <section id="prof" class="card hidden">
+      <div class="topline"><h2>Espace professeur</h2><button class="small" data-home>Déconnexion</button></div>
+      <p class="muted">Gestion scolaire</p>
+      <div class="grid">
+        <button data-page="ajouter-note">Ajouter une note</button>
+        <button data-page="appreciation">Appréciation</button>
+        <button data-page="avertissement">Avertissement</button>
+        <button data-page="sanction">Sanction</button>
+      </div>
+      <div id="prof-result" class="result"></div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
