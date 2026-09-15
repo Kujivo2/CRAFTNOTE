@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -7,108 +7,60 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="background-glow glow-one"></div>
-  <div class="background-glow glow-two"></div>
-
   <main class="page">
-    <header class="topbar">
-      <div class="brand-mini">
-        <span class="brand-mark">C</span>
-        <span>CRAFTNOTE</span>
-      </div>
-      <div class="top-actions">
-        <span class="status-pill"><span></span> Espace scolaire</span>
-        <button class="text-button hidden" id="logoutButton">Se déconnecter</button>
-      </div>
-    </header>
-
-    <section class="hero" id="homeView">
-      <div class="hero-copy">
-        <p class="eyebrow">PORTAIL NUMÉRIQUE</p>
-        <h1>Bienvenue sur<br><strong>CRAFTNOTE</strong></h1>
-        <p class="subtitle">Mantes-la-Jolie</p>
-        <p class="description">
-          Un espace simple et moderne pour suivre la vie scolaire,
-          les résultats et les informations de l'établissement.
-        </p>
-        <button class="primary-button" id="openAccess">
-          Accéder à mon espace <span>→</span>
-        </button>
-      </div>
-
-      <div class="preview-card" aria-label="Aperçu de l'espace scolaire">
-        <div class="preview-top">
-          <div>
-            <p class="preview-label">MON ESPACE</p>
-            <h2>Vie scolaire</h2>
-          </div>
-          <div class="round-icon">✦</div>
-        </div>
-        <div class="preview-line"></div>
-        <div class="preview-row"><div class="preview-icon">▤</div><div><strong>Notes et appréciations</strong><small>Suivi des résultats</small></div><span>›</span></div>
-        <div class="preview-row"><div class="preview-icon">◷</div><div><strong>Emploi du temps</strong><small>Organisation des cours</small></div><span>›</span></div>
-        <div class="preview-row"><div class="preview-icon">✓</div><div><strong>Vie scolaire</strong><small>Informations et suivi</small></div><span>›</span></div>
-        <div class="preview-footer">Une interface claire, sans complication.</div>
+    <section id="home" class="card home-card">
+      <h1>CRAFTNOTE</h1>
+      <p>Mantes-la-Jolie</p>
+      <div class="actions">
+        <button data-open="login-eleve">Session élève</button>
+        <button data-open="login-prof">Session professeur</button>
       </div>
     </section>
 
-    <section class="dashboard hidden" id="dashboardView">
-      <div class="dashboard-heading">
-        <div>
-          <p class="eyebrow">ESPACE PERSONNEL</p>
-          <h2 id="welcomeTitle">Bienvenue</h2>
-          <p id="profileSummary" class="muted"></p>
-        </div>
-        <span class="role-badge" id="roleBadge"></span>
-      </div>
-
-      <div id="dashboardMessage" class="notice hidden"></div>
-      <div class="dashboard-grid">
-        <section class="panel">
-          <div class="panel-heading"><h3>Notes</h3><span>Résultats</span></div>
-          <div id="gradesList" class="data-list"><p class="muted">Chargement…</p></div>
-        </section>
-        <section class="panel">
-          <div class="panel-heading"><h3>Vie scolaire</h3><span>Avertissements et sanctions</span></div>
-          <div id="disciplineList" class="data-list"><p class="muted">Chargement…</p></div>
-        </section>
-        <section class="panel wide-panel">
-          <div class="panel-heading"><h3>Emploi du temps</h3><span>Cours</span></div>
-          <div id="scheduleList" class="data-list"><p class="muted">Chargement…</p></div>
-        </section>
-      </div>
-
-      <section class="panel teacher-panel hidden" id="teacherPanel">
-        <div class="panel-heading"><h3>Outils professeur</h3><span>Ajouter une information</span></div>
-        <form id="teacherForm" class="teacher-form">
-          <label>Élève (identifiant UUID)<input id="studentIdInput" required placeholder="ID du compte élève"></label>
-          <label>Matière<input id="subjectInput" required placeholder="Mathématiques"></label>
-          <label>Note<input id="gradeInput" required type="number" min="0" max="20" step="0.01" placeholder="15"></label>
-          <label>Appréciation<textarea id="commentInput" placeholder="Très bon travail…"></textarea></label>
-          <button class="primary-button small-button" type="submit">Ajouter la note</button>
-        </form>
-        <p class="muted small">Le professeur doit utiliser l’identifiant UUID du compte élève. La gestion complète des comptes sera ajoutée dans l’espace administrateur.</p>
-      </section>
+    <section id="login-eleve" class="card hidden">
+      <button class="back" data-back>← Retour</button>
+      <h2>Session élève</h2>
+      <p class="muted">Connecte-toi pour consulter tes informations.</p>
+      <input id="eleve-identifiant" placeholder="Identifiant" autocomplete="off">
+      <input id="eleve-motdepasse" type="password" placeholder="Mot de passe">
+      <button id="eleve-connexion">Se connecter</button>
+      <p class="hint">Démo : leo / demo</p>
     </section>
 
-    <footer class="footer"><span>© CRAFTNOTE</span><span>Mantes-la-Jolie</span></footer>
+    <section id="login-prof" class="card hidden">
+      <button class="back" data-back>← Retour</button>
+      <h2>Session professeur</h2>
+      <p class="muted">Connecte-toi pour gérer les dossiers scolaires.</p>
+      <input id="prof-identifiant" placeholder="Identifiant" autocomplete="off">
+      <input id="prof-motdepasse" type="password" placeholder="Mot de passe">
+      <button id="prof-connexion">Se connecter</button>
+      <p class="hint">Démo : prof / demo</p>
+    </section>
+
+    <section id="eleve" class="card hidden">
+      <div class="topline"><h2>Espace élève</h2><button class="small" data-home>Déconnexion</button></div>
+      <p class="muted">Bienvenue Léo Bernard</p>
+      <div class="grid">
+        <button data-page="notes-eleve">Mes notes</button>
+        <button data-page="emploi">Emploi du temps</button>
+        <button data-page="avertissements-eleve">Mes avertissements</button>
+        <button data-page="sanctions-eleve">Mes sanctions</button>
+      </div>
+      <div id="eleve-result" class="result"></div>
+    </section>
+
+    <section id="prof" class="card hidden">
+      <div class="topline"><h2>Espace professeur</h2><button class="small" data-home>Déconnexion</button></div>
+      <p class="muted">Gestion scolaire</p>
+      <div class="grid">
+        <button data-page="ajouter-note">Ajouter une note</button>
+        <button data-page="appreciation">Appréciation</button>
+        <button data-page="avertissement">Avertissement</button>
+        <button data-page="sanction">Sanction</button>
+      </div>
+      <div id="prof-result" class="result"></div>
+    </section>
   </main>
-
-  <div class="modal hidden" id="accessModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-box">
-      <button class="close-button" id="closeAccess" aria-label="Fermer">×</button>
-      <p class="eyebrow">ACCÈS SÉCURISÉ</p>
-      <h2 id="modalTitle">Connexion</h2>
-      <p class="modal-text">Connecte-toi avec un compte créé dans Supabase.</p>
-      <form id="loginForm" class="login-form">
-        <label>Adresse e-mail<input id="emailInput" type="email" required placeholder="exemple@ecole.fr"></label>
-        <label>Mot de passe<input id="passwordInput" type="password" required placeholder="Mot de passe"></label>
-        <button class="primary-button" type="submit">Se connecter <span>→</span></button>
-      </form>
-      <p id="loginMessage" class="selection-message" aria-live="polite"></p>
-    </div>
-  </div>
-
-  <script type="module" src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
