@@ -18,9 +18,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 
-/* =========================================================
+/* =====================================================
    FIREBASE
-========================================================= */
+===================================================== */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4",
@@ -33,13 +33,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/* =========================================================
+/* =====================================================
    OUTILS
-========================================================= */
+===================================================== */
 
 const $ = (id) => document.getElementById(id);
 
@@ -51,25 +52,38 @@ const screens = [
   "prof"
 ];
 
+
 function show(id) {
+
   screens.forEach((screen) => {
+
     const element = $(screen);
 
     if (element) {
-      element.classList.toggle("hidden", screen !== id);
+      element.classList.toggle(
+        "hidden",
+        screen !== id
+      );
     }
+
   });
+
 }
 
+
 function result(id, html) {
+
   const element = $(id);
 
   if (element) {
     element.innerHTML = html;
   }
+
 }
 
+
 function escapeHtml(value) {
+
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -78,37 +92,46 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+
 function formatDate(date) {
-  if (!date) return "Date inconnue";
+
+  if (!date) {
+    return "Date inconnue";
+  }
 
   const parts = String(date).split("-");
 
   if (parts.length === 3) {
+
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
   }
 
   return String(date);
 }
 
 
-/* =========================================================
-   PROFIL CONNECTÉ
-========================================================= */
+/* =====================================================
+   PROFIL DU COMPTE CONNECTÉ
+===================================================== */
 
 async function getCurrentProfile() {
+
   const user = auth.currentUser;
 
   if (!user) {
     return null;
   }
 
-  const profileRef = doc(
-    db,
-    "profiles",
-    user.uid
-  );
+  const profileRef =
+    doc(
+      db,
+      "profiles",
+      user.uid
+    );
 
-  const profileSnap = await getDoc(profileRef);
+  const profileSnap =
+    await getDoc(profileRef);
 
   if (!profileSnap.exists()) {
     return null;
@@ -122,206 +145,286 @@ async function getCurrentProfile() {
 }
 
 
-/* =========================================================
+/* =====================================================
    NAVIGATION
-========================================================= */
+===================================================== */
 
-document.querySelectorAll("[data-open]").forEach((button) => {
-  button.addEventListener("click", () => {
-    show(button.dataset.open);
+document
+  .querySelectorAll("[data-open]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        show(
+          button.dataset.open
+        );
+
+      }
+    );
+
   });
-});
 
-document.querySelectorAll("[data-back]").forEach((button) => {
-  button.addEventListener("click", () => {
-    show("home");
+
+document
+  .querySelectorAll("[data-back]")
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        show("home");
+
+      }
+    );
+
   });
-});
 
-document.querySelectorAll("[data-home]").forEach((button) => {
-  button.addEventListener("click", async () => {
 
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error(error);
-    }
+document
+  .querySelectorAll("[data-home]")
+  .forEach((button) => {
 
-    show("home");
+    button.addEventListener(
+      "click",
+      async () => {
+
+        try {
+
+          await signOut(auth);
+
+        } catch (error) {
+
+          console.error(error);
+
+        }
+
+        show("home");
+
+      }
+    );
+
   });
-});
 
 
-/* =========================================================
+/* =====================================================
    CONNEXION ÉLÈVE
-========================================================= */
+===================================================== */
 
-$("eleve-connexion").addEventListener(
-  "click",
-  async () => {
+$("eleve-connexion")
+  .addEventListener(
+    "click",
+    async () => {
 
-    const email =
-      $("eleve-identifiant").value.trim();
+      const email =
+        $("eleve-identifiant")
+          .value
+          .trim();
 
-    const password =
-      $("eleve-motdepasse").value;
+      const password =
+        $("eleve-motdepasse")
+          .value;
 
-    if (!email || !password) {
-      alert(
-        "Veuillez remplir l'adresse e-mail et le mot de passe."
-      );
-      return;
-    }
 
-    try {
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const profile =
-        await getCurrentProfile();
-
-      if (!profile) {
-
-        await signOut(auth);
+      if (!email || !password) {
 
         alert(
-          "Aucun profil CRAFTNOTE trouvé."
+          "Veuillez remplir les deux champs."
         );
 
         return;
       }
 
-      if (profile.role !== "student") {
 
-        await signOut(auth);
+      try {
 
-        alert(
-          "Ce compte n'est pas un compte élève."
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
         );
 
-        return;
+
+        const profile =
+          await getCurrentProfile();
+
+
+        if (!profile) {
+
+          await signOut(auth);
+
+          alert(
+            "Aucun profil CRAFTNOTE trouvé."
+          );
+
+          return;
+        }
+
+
+        if (profile.role !== "student") {
+
+          await signOut(auth);
+
+          alert(
+            "Ce compte n'est pas un compte élève."
+          );
+
+          return;
+        }
+
+
+        document
+          .querySelector("#eleve .muted")
+          .textContent =
+          `Bienvenue ${profile.nom || email}`;
+
+
+        show("eleve");
+
+      } catch (error) {
+
+        console.error(error);
+
+        afficherErreurConnexion(error);
+
       }
 
-      document.querySelector(
-        "#eleve .muted"
-      ).textContent =
-        `Bienvenue ${profile.nom || email}`;
-
-      show("eleve");
-
-    } catch (error) {
-
-      console.error(error);
-
-      afficherErreurConnexion(error);
     }
-  }
-);
+  );
 
 
-/* =========================================================
+/* =====================================================
    CONNEXION PROFESSEUR
-========================================================= */
+===================================================== */
 
-$("prof-connexion").addEventListener(
-  "click",
-  async () => {
+$("prof-connexion")
+  .addEventListener(
+    "click",
+    async () => {
 
-    const email =
-      $("prof-identifiant").value.trim();
+      const email =
+        $("prof-identifiant")
+          .value
+          .trim();
 
-    const password =
-      $("prof-motdepasse").value;
+      const password =
+        $("prof-motdepasse")
+          .value;
 
-    if (!email || !password) {
 
-      alert(
-        "Veuillez remplir l'adresse e-mail et le mot de passe."
-      );
-
-      return;
-    }
-
-    try {
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const profile =
-        await getCurrentProfile();
-
-      if (!profile) {
-
-        await signOut(auth);
+      if (!email || !password) {
 
         alert(
-          "Aucun profil CRAFTNOTE trouvé."
+          "Veuillez remplir les deux champs."
         );
 
         return;
       }
 
-      if (profile.role !== "teacher") {
 
-        await signOut(auth);
+      try {
 
-        alert(
-          "Ce compte n'est pas un compte professeur."
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
         );
 
-        return;
+
+        const profile =
+          await getCurrentProfile();
+
+
+        if (!profile) {
+
+          await signOut(auth);
+
+          alert(
+            "Aucun profil CRAFTNOTE trouvé."
+          );
+
+          return;
+        }
+
+
+        if (profile.role !== "teacher") {
+
+          await signOut(auth);
+
+          alert(
+            "Ce compte n'est pas un compte professeur."
+          );
+
+          return;
+        }
+
+
+        document
+          .querySelector("#prof .muted")
+          .textContent =
+          `Bienvenue ${profile.nom || email}`;
+
+
+        show("prof");
+
+      } catch (error) {
+
+        console.error(error);
+
+        afficherErreurConnexion(error);
+
       }
 
-      document.querySelector(
-        "#prof .muted"
-      ).textContent =
-        `Bienvenue ${profile.nom || email}`;
-
-      show("prof");
-
-    } catch (error) {
-
-      console.error(error);
-
-      afficherErreurConnexion(error);
     }
-  }
-);
+  );
 
 
-/* =========================================================
-   ERREURS
-========================================================= */
+/* =====================================================
+   ERREURS DE CONNEXION
+===================================================== */
 
 function afficherErreurConnexion(error) {
 
-  if (error.code === "auth/invalid-credential") {
+  if (
+    error.code ===
+    "auth/invalid-credential"
+  ) {
+
     alert(
       "Adresse e-mail ou mot de passe incorrect."
     );
+
     return;
   }
 
-  if (error.code === "auth/invalid-email") {
+
+  if (
+    error.code ===
+    "auth/invalid-email"
+  ) {
+
     alert(
       "Adresse e-mail invalide."
     );
+
     return;
   }
 
-  if (error.code === "auth/too-many-requests") {
+
+  if (
+    error.code ===
+    "auth/too-many-requests"
+  ) {
+
     alert(
       "Trop de tentatives. Réessayez plus tard."
     );
+
     return;
   }
+
 
   alert(
     "Erreur lors de la connexion."
@@ -329,33 +432,47 @@ function afficherErreurConnexion(error) {
 }
 
 
-/* =========================================================
+/* =====================================================
    RÉCUPÉRER LES ÉLÈVES
-========================================================= */
+===================================================== */
 
 async function getStudents() {
 
   const profilesRef =
-    collection(db, "profiles");
+    collection(
+      db,
+      "profiles"
+    );
 
-  const q = query(
-    profilesRef,
-    where("role", "==", "student")
-  );
+
+  const q =
+    query(
+      profilesRef,
+      where(
+        "role",
+        "==",
+        "student"
+      )
+    );
+
 
   const snapshot =
     await getDocs(q);
 
+
   const students = [];
+
 
   snapshot.forEach((document) => {
 
     const data =
       document.data();
 
+
     students.push({
 
-      uid: document.id,
+      uid:
+        document.id,
 
       nom:
         data.nom ||
@@ -369,20 +486,23 @@ async function getStudents() {
 
   });
 
-  students.sort((a, b) =>
-    a.nom.localeCompare(
-      b.nom,
-      "fr"
-    )
+
+  students.sort(
+    (a, b) =>
+      a.nom.localeCompare(
+        b.nom,
+        "fr"
+      )
   );
+
 
   return students;
 }
 
 
-/* =========================================================
-   FORMULAIRE AJOUTER UNE NOTE
-========================================================= */
+/* =====================================================
+   FORMULAIRE PROFESSEUR — AJOUTER UNE NOTE
+===================================================== */
 
 async function afficherFormulaireNote() {
 
@@ -402,6 +522,7 @@ async function afficherFormulaireNote() {
           </select>
         </label>
 
+
         <label>
           Matière
           <input
@@ -410,6 +531,7 @@ async function afficherFormulaireNote() {
             placeholder="Ex. Mathématiques"
           >
         </label>
+
 
         <label>
           Note
@@ -420,6 +542,7 @@ async function afficherFormulaireNote() {
           >
         </label>
 
+
         <label>
           Date
           <input
@@ -428,11 +551,17 @@ async function afficherFormulaireNote() {
           >
         </label>
 
-        <button id="enregistrer-note">
+
+        <button
+          id="enregistrer-note"
+        >
           Enregistrer la note
         </button>
 
-        <p id="note-message"></p>
+
+        <p
+          id="note-message"
+        ></p>
 
       </div>
     `
@@ -442,10 +571,12 @@ async function afficherFormulaireNote() {
   const select =
     $("note-eleve");
 
+
   try {
 
     const students =
       await getStudents();
+
 
     if (students.length === 0) {
 
@@ -459,6 +590,7 @@ async function afficherFormulaireNote() {
       return;
     }
 
+
     select.innerHTML =
       `
         <option value="">
@@ -467,25 +599,34 @@ async function afficherFormulaireNote() {
       `;
 
 
-    students.forEach((student) => {
+    students.forEach(
+      (student) => {
 
-      const option =
-        document.createElement("option");
+        const option =
+          document.createElement(
+            "option"
+          );
 
-      /*
-        IMPORTANT :
-        la valeur cachée est l'UID Firebase.
-        Le professeur voit uniquement le nom.
-      */
 
-      option.value =
-        student.uid;
+        /*
+          Le professeur voit le nom,
+          mais la valeur réelle est
+          l'UID Firebase.
+        */
 
-      option.textContent =
-        student.nom;
+        option.value =
+          student.uid;
 
-      select.appendChild(option);
-    });
+        option.textContent =
+          student.nom;
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
 
 
   } catch (error) {
@@ -511,14 +652,15 @@ async function afficherFormulaireNote() {
 }
 
 
-/* =========================================================
-   ENREGISTRER UNE NOTE
-========================================================= */
+/* =====================================================
+   ENREGISTRER LA NOTE
+===================================================== */
 
 async function enregistrerNote() {
 
   const eleveUid =
-    $("note-eleve").value;
+    $("note-eleve")
+      .value;
 
   const matiere =
     $("note-matiere")
@@ -531,7 +673,8 @@ async function enregistrerNote() {
       .trim();
 
   const date =
-    $("note-date").value;
+    $("note-date")
+      .value;
 
   const message =
     $("note-message");
@@ -554,6 +697,7 @@ async function enregistrerNote() {
   const professeur =
     auth.currentUser;
 
+
   if (!professeur) {
 
     message.textContent =
@@ -565,10 +709,13 @@ async function enregistrerNote() {
 
   try {
 
-    /* Vérifier le professeur */
+    /*
+      Vérification du professeur
+    */
 
     const profileProf =
       await getCurrentProfile();
+
 
     if (
       !profileProf ||
@@ -582,7 +729,10 @@ async function enregistrerNote() {
     }
 
 
-    /* Récupérer l'élève sélectionné */
+    /*
+      Récupération du profil
+      de l'élève choisi.
+    */
 
     const eleveRef =
       doc(
@@ -591,8 +741,12 @@ async function enregistrerNote() {
         eleveUid
       );
 
+
     const eleveSnap =
-      await getDoc(eleveRef);
+      await getDoc(
+        eleveRef
+      );
+
 
     if (!eleveSnap.exists()) {
 
@@ -607,7 +761,9 @@ async function enregistrerNote() {
       eleveSnap.data();
 
 
-    if (eleve.role !== "student") {
+    if (
+      eleve.role !== "student"
+    ) {
 
       message.textContent =
         "❌ Ce compte n'est pas un élève.";
@@ -618,7 +774,7 @@ async function enregistrerNote() {
 
     /*
       UN SEUL DOCUMENT
-      pour une seule note.
+      pour cette note.
     */
 
     await addDoc(
@@ -632,10 +788,12 @@ async function enregistrerNote() {
           eleveUid,
 
         eleveNom:
-          eleve.nom || "Élève",
+          eleve.nom ||
+          "Élève",
 
         eleveEmail:
-          eleve.email || "",
+          eleve.email ||
+          "",
 
         matiere:
           matiere,
@@ -661,14 +819,14 @@ async function enregistrerNote() {
       `✅ Note enregistrée pour ${eleve.nom}.`;
 
 
-    $("note-matiere").value =
-      "";
+    $("note-matiere")
+      .value = "";
 
-    $("note-valeur").value =
-      "";
+    $("note-valeur")
+      .value = "";
 
-    $("note-date").value =
-      "";
+    $("note-date")
+      .value = "";
 
 
   } catch (error) {
@@ -677,18 +835,20 @@ async function enregistrerNote() {
 
     message.textContent =
       "❌ Impossible d'enregistrer la note.";
+
   }
 }
 
 
-/* =========================================================
-   AFFICHER LES NOTES DE L'ÉLÈVE
-========================================================= */
+/* =====================================================
+   NOTES DE L'ÉLÈVE
+===================================================== */
 
 async function afficherNotesEleve() {
 
   const user =
     auth.currentUser;
+
 
   if (!user) {
 
@@ -711,21 +871,19 @@ async function afficherNotesEleve() {
 
 
     /*
-      LA CLÉ DU SYSTÈME :
-
-      On utilise l'UID du compte connecté.
-      Donc Nate ne demande jamais
-      les notes de Sam.
+      TRÈS IMPORTANT :
+      on cherche avec l'UID du compte connecté.
     */
 
-    const q = query(
-      gradesRef,
-      where(
-        "eleveUid",
-        "==",
-        user.uid
-      )
-    );
+    const q =
+      query(
+        gradesRef,
+        where(
+          "eleveUid",
+          "==",
+          user.uid
+        )
+      );
 
 
     const snapshot =
@@ -750,69 +908,89 @@ async function afficherNotesEleve() {
     const notes = [];
 
 
-    snapshot.forEach((document) => {
+    snapshot.forEach(
+      (document) => {
 
-      notes.push(
-        {
-          id: document.id,
+        notes.push({
+          id:
+            document.id,
+
           ...document.data()
-        }
-      );
+        });
 
-    });
+      }
+    );
 
 
-    notes.sort((a, b) =>
-      String(b.date || "")
-        .localeCompare(
-          String(a.date || "")
+    notes.sort(
+      (a, b) =>
+        String(
+          b.date || ""
+        ).localeCompare(
+          String(
+            a.date || ""
+          )
         )
     );
 
 
-    let html = `
-      <strong>Mes notes</strong>
-      <div class="notes-list">
-    `;
+    let html =
+      `
+        <strong>
+          Mes notes
+        </strong>
 
-
-    notes.forEach((note) => {
-
-      html += `
-        <div class="note-card">
-
-          <strong>
-            ${escapeHtml(note.matiere)}
-          </strong>
-
-          <br>
-
-          Note :
-          ${escapeHtml(note.note)}
-
-          <br>
-
-          Date :
-          ${escapeHtml(
-            formatDate(note.date)
-          )}
-
-          <br>
-
-          Professeur :
-          ${escapeHtml(
-            note.professeur
-          )}
-
-        </div>
+        <div class="notes-list">
       `;
 
-    });
+
+    notes.forEach(
+      (note) => {
+
+        html +=
+          `
+            <div class="note-card">
+
+              <strong>
+                ${escapeHtml(
+                  note.matiere
+                )}
+              </strong>
+
+              <br>
+
+              Note :
+              ${escapeHtml(
+                note.note
+              )}
+
+              <br>
+
+              Date :
+              ${escapeHtml(
+                formatDate(
+                  note.date
+                )
+              )}
+
+              <br>
+
+              Professeur :
+              ${escapeHtml(
+                note.professeur
+              )}
+
+            </div>
+          `;
+
+      }
+    );
 
 
-    html += `
-      </div>
-    `;
+    html +=
+      `
+        </div>
+      `;
 
 
     result(
@@ -828,291 +1006,325 @@ async function afficherNotesEleve() {
     result(
       "eleve-result",
       `
-        <strong>Mes notes</strong>
+        <strong>
+          Mes notes
+        </strong>
+
         <br><br>
+
         ❌ Impossible de charger les notes.
       `
     );
+
   }
 }
 
 
-/* =========================================================
-   AUTRES PAGES
-========================================================= */
+/* =====================================================
+   BOUTONS DES ESPACES
+===================================================== */
 
-document.querySelectorAll(
-  "[data-page]"
-).forEach((button) => {
+document
+  .querySelectorAll("[data-page]")
+  .forEach((button) => {
 
-  button.addEventListener(
-    "click",
-    async () => {
+    button.addEventListener(
+      "click",
+      async () => {
 
-      const page =
-        button.dataset.page;
-
-      const target =
-        button.closest("#eleve")
-          ? "eleve-result"
-          : "prof-result";
+        const page =
+          button.dataset.page;
 
 
-      /* NOTES */
-
-      if (
-        page === "notes-eleve"
-      ) {
-
-        await afficherNotesEleve();
-
-        return;
-      }
+        const target =
+          button.closest("#eleve")
+            ? "eleve-result"
+            : "prof-result";
 
 
-      /* EMPLOI DU TEMPS */
+        /* -------------------------
+           NOTES ÉLÈVE
+        ------------------------- */
 
-      if (
-        page === "emploi"
-      ) {
+        if (
+          page ===
+          "notes-eleve"
+        ) {
 
-        result(
-          target,
-          `
-            <strong>
-              Emploi du temps
-            </strong>
+          await afficherNotesEleve();
 
-            <br><br>
-
-            Lundi — Français 08:00
-            <br>
-
-            Mardi — Mathématiques 10:00
-            <br>
-
-            Jeudi — Histoire 14:00
-          `
-        );
-
-        return;
-      }
+          return;
+        }
 
 
-      /* AVERTISSEMENTS */
+        /* -------------------------
+           EMPLOI DU TEMPS
+        ------------------------- */
 
-      if (
-        page ===
-        "avertissements-eleve"
-      ) {
+        if (
+          page ===
+          "emploi"
+        ) {
 
-        result(
-          target,
-          `
-            <strong>
-              Mes avertissements
-            </strong>
+          result(
+            target,
+            `
+              <strong>
+                Emploi du temps
+              </strong>
 
-            <br><br>
+              <br><br>
 
-            Aucun avertissement.
-          `
-        );
+              Lundi — Français 08:00
+              <br>
 
-        return;
-      }
+              Mardi — Mathématiques 10:00
+              <br>
 
-
-      /* SANCTIONS */
-
-      if (
-        page ===
-        "sanctions-eleve"
-      ) {
-
-        result(
-          target,
-          `
-            <strong>
-              Mes sanctions
-            </strong>
-
-            <br><br>
-
-            Aucune sanction.
-          `
-        );
-
-        return;
-      }
-
-
-      /* AJOUT NOTE */
-
-      if (
-        page ===
-        "ajouter-note"
-      ) {
-
-        await afficherFormulaireNote();
-
-        return;
-      }
-
-
-      /* APPRÉCIATION */
-
-      if (
-        page ===
-        "appreciation"
-      ) {
-
-        result(
-          target,
-          `
-            <strong>
-              Appréciation
-            </strong>
-
-            <br><br>
-
-            <textarea
-              id="new-app"
-              placeholder="Écrire une appréciation"
-            ></textarea>
-
-            <br>
-
-            <button
-              id="save-app"
-            >
-              Enregistrer
-            </button>
-
-            <p id="app-message"></p>
-          `
-        );
-
-        $("save-app")
-          .addEventListener(
-            "click",
-            () => {
-
-              $("app-message")
-                .textContent =
-                "Appréciation enregistrée.";
-
-            }
+              Jeudi — Histoire 14:00
+            `
           );
 
-        return;
-      }
+          return;
+        }
 
 
-      /* AVERTISSEMENT */
+        /* -------------------------
+           AVERTISSEMENTS
+        ------------------------- */
 
-      if (
-        page ===
-        "avertissement"
-      ) {
+        if (
+          page ===
+          "avertissements-eleve"
+        ) {
 
-        result(
-          target,
-          `
-            <strong>
-              Avertissement
-            </strong>
+          result(
+            target,
+            `
+              <strong>
+                Mes avertissements
+              </strong>
 
-            <br><br>
+              <br><br>
 
-            <textarea
-              id="new-warning"
-              placeholder="Motif de l’avertissement"
-            ></textarea>
-
-            <br>
-
-            <button
-              id="save-warning"
-            >
-              Enregistrer
-            </button>
-
-            <p id="warning-message"></p>
-          `
-        );
-
-        $("save-warning")
-          .addEventListener(
-            "click",
-            () => {
-
-              $("warning-message")
-                .textContent =
-                "Avertissement enregistré.";
-
-            }
+              Aucun avertissement.
+            `
           );
 
-        return;
-      }
+          return;
+        }
 
 
-      /* SANCTION */
+        /* -------------------------
+           SANCTIONS
+        ------------------------- */
 
-      if (
-        page ===
-        "sanction"
-      ) {
+        if (
+          page ===
+          "sanctions-eleve"
+        ) {
 
-        result(
-          target,
-          `
-            <strong>
-              Sanction
-            </strong>
+          result(
+            target,
+            `
+              <strong>
+                Mes sanctions
+              </strong>
 
-            <br><br>
+              <br><br>
 
-            <textarea
-              id="new-sanction"
-              placeholder="Motif de la sanction"
-            ></textarea>
-
-            <br>
-
-            <button
-              id="save-sanction"
-            >
-              Enregistrer
-            </button>
-
-            <p id="sanction-message"></p>
-          `
-        );
-
-        $("save-sanction")
-          .addEventListener(
-            "click",
-            () => {
-
-              $("sanction-message")
-                .textContent =
-                "Sanction enregistrée.";
-
-            }
+              Aucune sanction.
+            `
           );
 
-        return;
+          return;
+        }
+
+
+        /* -------------------------
+           AJOUTER UNE NOTE
+        ------------------------- */
+
+        if (
+          page ===
+          "ajouter-note"
+        ) {
+
+          await afficherFormulaireNote();
+
+          return;
+        }
+
+
+        /* -------------------------
+           APPRÉCIATION
+        ------------------------- */
+
+        if (
+          page ===
+          "appreciation"
+        ) {
+
+          result(
+            target,
+            `
+              <strong>
+                Appréciation
+              </strong>
+
+              <br><br>
+
+              <textarea
+                id="new-app"
+                placeholder="Écrire une appréciation"
+              ></textarea>
+
+              <br>
+
+              <button
+                id="save-app"
+              >
+                Enregistrer
+              </button>
+
+              <p
+                id="app-message"
+              ></p>
+            `
+          );
+
+
+          $("save-app")
+            .addEventListener(
+              "click",
+              () => {
+
+                $("app-message")
+                  .textContent =
+                  "Appréciation enregistrée.";
+
+              }
+            );
+
+          return;
+        }
+
+
+        /* -------------------------
+           AVERTISSEMENT
+        ------------------------- */
+
+        if (
+          page ===
+          "avertissement"
+        ) {
+
+          result(
+            target,
+            `
+              <strong>
+                Avertissement
+              </strong>
+
+              <br><br>
+
+              <textarea
+                id="new-warning"
+                placeholder="Motif de l’avertissement"
+              ></textarea>
+
+              <br>
+
+              <button
+                id="save-warning"
+              >
+                Enregistrer
+              </button>
+
+              <p
+                id="warning-message"
+              ></p>
+            `
+          );
+
+
+          $("save-warning")
+            .addEventListener(
+              "click",
+              () => {
+
+                $("warning-message")
+                  .textContent =
+                  "Avertissement enregistré.";
+
+              }
+            );
+
+          return;
+        }
+
+
+        /* -------------------------
+           SANCTION
+        ------------------------- */
+
+        if (
+          page ===
+          "sanction"
+        ) {
+
+          result(
+            target,
+            `
+              <strong>
+                Sanction
+              </strong>
+
+              <br><br>
+
+              <textarea
+                id="new-sanction"
+                placeholder="Motif de la sanction"
+              ></textarea>
+
+              <br>
+
+              <button
+                id="save-sanction"
+              >
+                Enregistrer
+              </button>
+
+              <p
+                id="sanction-message"
+              ></p>
+            `
+          );
+
+
+          $("save-sanction")
+            .addEventListener(
+              "click",
+              () => {
+
+                $("sanction-message")
+                  .textContent =
+                  "Sanction enregistrée.";
+
+              }
+            );
+
+          return;
+        }
+
       }
+    );
 
-    }
-  );
-});
+  });
 
 
-/* =========================================================
+/* =====================================================
    DÉMARRAGE
-========================================================= */
+===================================================== */
 
 show("home");
