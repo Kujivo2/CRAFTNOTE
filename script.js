@@ -102,7 +102,12 @@ async function getCurrentProfile() {
     return null;
   }
 
-  const profileRef = doc(db, "profiles", user.uid);
+  const profileRef = doc(
+    db,
+    "profiles",
+    user.uid
+  );
+
   const profileSnap = await getDoc(profileRef);
 
   if (!profileSnap.exists()) {
@@ -151,174 +156,224 @@ document.querySelectorAll("[data-home]").forEach((button) => {
    CONNEXION ÉLÈVE
 ========================================================= */
 
-$("eleve-connexion").addEventListener("click", async () => {
+$("eleve-connexion").addEventListener(
+  "click",
+  async () => {
 
-  const email = $("eleve-identifiant").value.trim();
-  const password = $("eleve-motdepasse").value;
+    const email =
+      $("eleve-identifiant").value.trim();
 
-  if (!email || !password) {
-    alert("Veuillez remplir l'adresse e-mail et le mot de passe.");
-    return;
-  }
+    const password =
+      $("eleve-motdepasse").value;
 
-  try {
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    const profile = await getCurrentProfile();
-
-    if (!profile) {
-      await signOut(auth);
-
+    if (!email || !password) {
       alert(
-        "Aucun profil CRAFTNOTE n'a été trouvé pour ce compte."
+        "Veuillez remplir l'adresse e-mail et le mot de passe."
       );
-
       return;
     }
 
-    if (profile.role !== "student") {
-      await signOut(auth);
+    try {
 
-      alert(
-        "Ce compte n'est pas un compte élève."
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
       );
 
-      return;
+      const profile =
+        await getCurrentProfile();
+
+      if (!profile) {
+
+        await signOut(auth);
+
+        alert(
+          "Aucun profil CRAFTNOTE trouvé."
+        );
+
+        return;
+      }
+
+      if (profile.role !== "student") {
+
+        await signOut(auth);
+
+        alert(
+          "Ce compte n'est pas un compte élève."
+        );
+
+        return;
+      }
+
+      document.querySelector(
+        "#eleve .muted"
+      ).textContent =
+        `Bienvenue ${profile.nom || email}`;
+
+      show("eleve");
+
+    } catch (error) {
+
+      console.error(error);
+
+      afficherErreurConnexion(error);
     }
-
-    document.querySelector("#eleve .muted").textContent =
-      `Bienvenue ${profile.nom || email}`;
-
-    show("eleve");
-
-  } catch (error) {
-
-    console.error(error);
-
-    afficherErreurConnexion(error);
   }
-});
+);
 
 
 /* =========================================================
    CONNEXION PROFESSEUR
 ========================================================= */
 
-$("prof-connexion").addEventListener("click", async () => {
+$("prof-connexion").addEventListener(
+  "click",
+  async () => {
 
-  const email = $("prof-identifiant").value.trim();
-  const password = $("prof-motdepasse").value;
+    const email =
+      $("prof-identifiant").value.trim();
 
-  if (!email || !password) {
-    alert("Veuillez remplir l'adresse e-mail et le mot de passe.");
-    return;
-  }
+    const password =
+      $("prof-motdepasse").value;
 
-  try {
-
-    await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-
-    const profile = await getCurrentProfile();
-
-    if (!profile) {
-      await signOut(auth);
+    if (!email || !password) {
 
       alert(
-        "Aucun profil CRAFTNOTE n'a été trouvé pour ce compte."
+        "Veuillez remplir l'adresse e-mail et le mot de passe."
       );
 
       return;
     }
 
-    if (profile.role !== "teacher") {
-      await signOut(auth);
+    try {
 
-      alert(
-        "Ce compte n'est pas un compte professeur."
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
       );
 
-      return;
+      const profile =
+        await getCurrentProfile();
+
+      if (!profile) {
+
+        await signOut(auth);
+
+        alert(
+          "Aucun profil CRAFTNOTE trouvé."
+        );
+
+        return;
+      }
+
+      if (profile.role !== "teacher") {
+
+        await signOut(auth);
+
+        alert(
+          "Ce compte n'est pas un compte professeur."
+        );
+
+        return;
+      }
+
+      document.querySelector(
+        "#prof .muted"
+      ).textContent =
+        `Bienvenue ${profile.nom || email}`;
+
+      show("prof");
+
+    } catch (error) {
+
+      console.error(error);
+
+      afficherErreurConnexion(error);
     }
-
-    document.querySelector("#prof .muted").textContent =
-      `Bienvenue ${profile.nom || email}`;
-
-    show("prof");
-
-  } catch (error) {
-
-    console.error(error);
-
-    afficherErreurConnexion(error);
   }
-});
+);
 
 
 /* =========================================================
-   ERREURS CONNEXION
+   ERREURS
 ========================================================= */
 
 function afficherErreurConnexion(error) {
 
   if (error.code === "auth/invalid-credential") {
-    alert("Adresse e-mail ou mot de passe incorrect.");
+    alert(
+      "Adresse e-mail ou mot de passe incorrect."
+    );
     return;
   }
 
   if (error.code === "auth/invalid-email") {
-    alert("Adresse e-mail invalide.");
+    alert(
+      "Adresse e-mail invalide."
+    );
     return;
   }
 
   if (error.code === "auth/too-many-requests") {
-    alert("Trop de tentatives. Réessayez plus tard.");
+    alert(
+      "Trop de tentatives. Réessayez plus tard."
+    );
     return;
   }
 
-  alert("Erreur lors de la connexion.");
+  alert(
+    "Erreur lors de la connexion."
+  );
 }
 
 
 /* =========================================================
-   RÉCUPÉRER TOUS LES ÉLÈVES
+   RÉCUPÉRER LES ÉLÈVES
 ========================================================= */
 
 async function getStudents() {
 
-  const profilesRef = collection(db, "profiles");
+  const profilesRef =
+    collection(db, "profiles");
 
   const q = query(
     profilesRef,
     where("role", "==", "student")
   );
 
-  const snapshot = await getDocs(q);
+  const snapshot =
+    await getDocs(q);
 
   const students = [];
 
   snapshot.forEach((document) => {
 
-    const data = document.data();
+    const data =
+      document.data();
 
     students.push({
+
       uid: document.id,
-      email: data.email || "",
-      nom: data.nom || data.email || "Élève"
+
+      nom:
+        data.nom ||
+        data.email ||
+        "Élève",
+
+      email:
+        data.email || ""
+
     });
 
   });
 
   students.sort((a, b) =>
-    a.nom.localeCompare(b.nom, "fr")
+    a.nom.localeCompare(
+      b.nom,
+      "fr"
+    )
   );
 
   return students;
@@ -331,10 +386,8 @@ async function getStudents() {
 
 async function afficherFormulaireNote() {
 
-  const target = "prof-result";
-
   result(
-    target,
+    "prof-result",
     `
       <strong>Ajouter une note</strong>
 
@@ -343,7 +396,9 @@ async function afficherFormulaireNote() {
         <label>
           Élève
           <select id="note-eleve">
-            <option value="">Chargement...</option>
+            <option value="">
+              Chargement des élèves...
+            </option>
           </select>
         </label>
 
@@ -383,70 +438,111 @@ async function afficherFormulaireNote() {
     `
   );
 
-  const select = $("note-eleve");
+
+  const select =
+    $("note-eleve");
 
   try {
 
-    const students = await getStudents();
+    const students =
+      await getStudents();
 
     if (students.length === 0) {
 
       select.innerHTML =
-        `<option value="">Aucun élève trouvé</option>`;
+        `
+          <option value="">
+            Aucun élève trouvé
+          </option>
+        `;
 
       return;
     }
 
     select.innerHTML =
-      `<option value="">Choisir un élève</option>`;
+      `
+        <option value="">
+          Choisir un élève
+        </option>
+      `;
+
 
     students.forEach((student) => {
 
-      const option = document.createElement("option");
+      const option =
+        document.createElement("option");
 
       /*
         IMPORTANT :
-        La valeur réelle est l'UID Firebase.
-        Le professeur voit seulement le nom.
+        la valeur cachée est l'UID Firebase.
+        Le professeur voit uniquement le nom.
       */
 
-      option.value = student.uid;
-      option.textContent = student.nom;
+      option.value =
+        student.uid;
+
+      option.textContent =
+        student.nom;
 
       select.appendChild(option);
     });
+
 
   } catch (error) {
 
     console.error(error);
 
     select.innerHTML =
-      `<option value="">Impossible de charger les élèves</option>`;
+      `
+        <option value="">
+          Erreur de chargement
+        </option>
+      `;
 
     return;
   }
 
-  $("enregistrer-note").addEventListener(
-    "click",
-    enregistrerNote
-  );
+
+  $("enregistrer-note")
+    .addEventListener(
+      "click",
+      enregistrerNote
+    );
 }
 
 
 /* =========================================================
-   ENREGISTRER LA NOTE
+   ENREGISTRER UNE NOTE
 ========================================================= */
 
 async function enregistrerNote() {
 
-  const eleveUid = $("note-eleve").value;
-  const matiere = $("note-matiere").value.trim();
-  const note = $("note-valeur").value.trim();
-  const date = $("note-date").value;
+  const eleveUid =
+    $("note-eleve").value;
 
-  const message = $("note-message");
+  const matiere =
+    $("note-matiere")
+      .value
+      .trim();
 
-  if (!eleveUid || !matiere || !note || !date) {
+  const note =
+    $("note-valeur")
+      .value
+      .trim();
+
+  const date =
+    $("note-date").value;
+
+  const message =
+    $("note-message");
+
+
+  if (
+    !eleveUid ||
+    !matiere ||
+    !note ||
+    !date
+  ) {
 
     message.textContent =
       "⚠️ Remplis tous les champs.";
@@ -454,9 +550,11 @@ async function enregistrerNote() {
     return;
   }
 
-  const user = auth.currentUser;
 
-  if (!user) {
+  const professeur =
+    auth.currentUser;
+
+  if (!professeur) {
 
     message.textContent =
       "❌ Vous devez être connecté.";
@@ -464,42 +562,37 @@ async function enregistrerNote() {
     return;
   }
 
+
   try {
 
-    /*
-      Vérification du professeur
-    */
+    /* Vérifier le professeur */
 
-    const profileProf = await getCurrentProfile();
+    const profileProf =
+      await getCurrentProfile();
 
-    if (!profileProf) {
-
-      message.textContent =
-        "❌ Profil professeur introuvable.";
-
-      return;
-    }
-
-    if (profileProf.role !== "teacher") {
+    if (
+      !profileProf ||
+      profileProf.role !== "teacher"
+    ) {
 
       message.textContent =
-        "❌ Vous n'avez pas les droits professeur.";
+        "❌ Compte professeur requis.";
 
       return;
     }
 
 
-    /*
-      Vérification de l'élève
-    */
+    /* Récupérer l'élève sélectionné */
 
-    const eleveRef = doc(
-      db,
-      "profiles",
-      eleveUid
-    );
+    const eleveRef =
+      doc(
+        db,
+        "profiles",
+        eleveUid
+      );
 
-    const eleveSnap = await getDoc(eleveRef);
+    const eleveSnap =
+      await getDoc(eleveRef);
 
     if (!eleveSnap.exists()) {
 
@@ -509,51 +602,74 @@ async function enregistrerNote() {
       return;
     }
 
-    const eleve = eleveSnap.data();
+
+    const eleve =
+      eleveSnap.data();
+
 
     if (eleve.role !== "student") {
 
       message.textContent =
-        "❌ Le compte sélectionné n'est pas un élève.";
+        "❌ Ce compte n'est pas un élève.";
 
       return;
     }
 
 
     /*
-      Création de la note
+      UN SEUL DOCUMENT
+      pour une seule note.
     */
 
     await addDoc(
-      collection(db, "grades"),
+      collection(
+        db,
+        "grades"
+      ),
       {
 
-        eleveUid: eleveUid,
+        eleveUid:
+          eleveUid,
 
-        eleveEmail: eleve.email,
+        eleveNom:
+          eleve.nom || "Élève",
 
-        eleveNom: eleve.nom,
+        eleveEmail:
+          eleve.email || "",
 
-        matiere: matiere,
+        matiere:
+          matiere,
 
-        note: note,
+        note:
+          note,
 
-        date: date,
+        date:
+          date,
 
-        professeurUid: user.uid,
+        professeurUid:
+          professeur.uid,
 
-        professeur: profileProf.nom || user.email
+        professeur:
+          profileProf.nom ||
+          professeur.email
 
       }
     );
 
 
     message.textContent =
-      "✅ Note enregistrée pour cet élève.";
+      `✅ Note enregistrée pour ${eleve.nom}.`;
 
-    $("note-matiere").value = "";
-    $("note-valeur").value = "";
-    $("note-date").value = "";
+
+    $("note-matiere").value =
+      "";
+
+    $("note-valeur").value =
+      "";
+
+    $("note-date").value =
+      "";
+
 
   } catch (error) {
 
@@ -561,7 +677,6 @@ async function enregistrerNote() {
 
     message.textContent =
       "❌ Impossible d'enregistrer la note.";
-
   }
 }
 
@@ -572,7 +687,8 @@ async function enregistrerNote() {
 
 async function afficherNotesEleve() {
 
-  const user = auth.currentUser;
+  const user =
+    auth.currentUser;
 
   if (!user) {
 
@@ -584,18 +700,23 @@ async function afficherNotesEleve() {
     return;
   }
 
+
   try {
 
-    /*
-      IMPORTANT :
-      On utilise l'UID Firebase du compte connecté.
-      L'élève ne récupère donc que SES notes.
-    */
+    const gradesRef =
+      collection(
+        db,
+        "grades"
+      );
 
-    const gradesRef = collection(
-      db,
-      "grades"
-    );
+
+    /*
+      LA CLÉ DU SYSTÈME :
+
+      On utilise l'UID du compte connecté.
+      Donc Nate ne demande jamais
+      les notes de Sam.
+    */
 
     const q = query(
       gradesRef,
@@ -606,7 +727,10 @@ async function afficherNotesEleve() {
       )
     );
 
-    const snapshot = await getDocs(q);
+
+    const snapshot =
+      await getDocs(q);
+
 
     if (snapshot.empty) {
 
@@ -625,23 +749,24 @@ async function afficherNotesEleve() {
 
     const notes = [];
 
+
     snapshot.forEach((document) => {
 
-      notes.push({
-        id: document.id,
-        ...document.data()
-      });
+      notes.push(
+        {
+          id: document.id,
+          ...document.data()
+        }
+      );
 
     });
 
 
-    /*
-      Tri par date
-    */
-
     notes.sort((a, b) =>
       String(b.date || "")
-        .localeCompare(String(a.date || ""))
+        .localeCompare(
+          String(a.date || "")
+        )
     );
 
 
@@ -668,12 +793,16 @@ async function afficherNotesEleve() {
           <br>
 
           Date :
-          ${escapeHtml(formatDate(note.date))}
+          ${escapeHtml(
+            formatDate(note.date)
+          )}
 
           <br>
 
           Professeur :
-          ${escapeHtml(note.professeur)}
+          ${escapeHtml(
+            note.professeur
+          )}
 
         </div>
       `;
@@ -691,235 +820,294 @@ async function afficherNotesEleve() {
       html
     );
 
+
   } catch (error) {
 
     console.error(error);
 
     result(
       "eleve-result",
-      "❌ Impossible de charger les notes."
+      `
+        <strong>Mes notes</strong>
+        <br><br>
+        ❌ Impossible de charger les notes.
+      `
     );
   }
 }
 
 
 /* =========================================================
-   AUTRES BOUTONS
+   AUTRES PAGES
 ========================================================= */
 
-document.querySelectorAll("[data-page]").forEach((button) => {
+document.querySelectorAll(
+  "[data-page]"
+).forEach((button) => {
 
-  button.addEventListener("click", async () => {
+  button.addEventListener(
+    "click",
+    async () => {
 
-    const page = button.dataset.page;
+      const page =
+        button.dataset.page;
 
-    const target =
-      button.closest("#eleve")
-        ? "eleve-result"
-        : "prof-result";
+      const target =
+        button.closest("#eleve")
+          ? "eleve-result"
+          : "prof-result";
 
 
-    /* MES NOTES */
+      /* NOTES */
 
-    if (page === "notes-eleve") {
+      if (
+        page === "notes-eleve"
+      ) {
 
-      await afficherNotesEleve();
+        await afficherNotesEleve();
 
-      return;
+        return;
+      }
+
+
+      /* EMPLOI DU TEMPS */
+
+      if (
+        page === "emploi"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Emploi du temps
+            </strong>
+
+            <br><br>
+
+            Lundi — Français 08:00
+            <br>
+
+            Mardi — Mathématiques 10:00
+            <br>
+
+            Jeudi — Histoire 14:00
+          `
+        );
+
+        return;
+      }
+
+
+      /* AVERTISSEMENTS */
+
+      if (
+        page ===
+        "avertissements-eleve"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Mes avertissements
+            </strong>
+
+            <br><br>
+
+            Aucun avertissement.
+          `
+        );
+
+        return;
+      }
+
+
+      /* SANCTIONS */
+
+      if (
+        page ===
+        "sanctions-eleve"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Mes sanctions
+            </strong>
+
+            <br><br>
+
+            Aucune sanction.
+          `
+        );
+
+        return;
+      }
+
+
+      /* AJOUT NOTE */
+
+      if (
+        page ===
+        "ajouter-note"
+      ) {
+
+        await afficherFormulaireNote();
+
+        return;
+      }
+
+
+      /* APPRÉCIATION */
+
+      if (
+        page ===
+        "appreciation"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Appréciation
+            </strong>
+
+            <br><br>
+
+            <textarea
+              id="new-app"
+              placeholder="Écrire une appréciation"
+            ></textarea>
+
+            <br>
+
+            <button
+              id="save-app"
+            >
+              Enregistrer
+            </button>
+
+            <p id="app-message"></p>
+          `
+        );
+
+        $("save-app")
+          .addEventListener(
+            "click",
+            () => {
+
+              $("app-message")
+                .textContent =
+                "Appréciation enregistrée.";
+
+            }
+          );
+
+        return;
+      }
+
+
+      /* AVERTISSEMENT */
+
+      if (
+        page ===
+        "avertissement"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Avertissement
+            </strong>
+
+            <br><br>
+
+            <textarea
+              id="new-warning"
+              placeholder="Motif de l’avertissement"
+            ></textarea>
+
+            <br>
+
+            <button
+              id="save-warning"
+            >
+              Enregistrer
+            </button>
+
+            <p id="warning-message"></p>
+          `
+        );
+
+        $("save-warning")
+          .addEventListener(
+            "click",
+            () => {
+
+              $("warning-message")
+                .textContent =
+                "Avertissement enregistré.";
+
+            }
+          );
+
+        return;
+      }
+
+
+      /* SANCTION */
+
+      if (
+        page ===
+        "sanction"
+      ) {
+
+        result(
+          target,
+          `
+            <strong>
+              Sanction
+            </strong>
+
+            <br><br>
+
+            <textarea
+              id="new-sanction"
+              placeholder="Motif de la sanction"
+            ></textarea>
+
+            <br>
+
+            <button
+              id="save-sanction"
+            >
+              Enregistrer
+            </button>
+
+            <p id="sanction-message"></p>
+          `
+        );
+
+        $("save-sanction")
+          .addEventListener(
+            "click",
+            () => {
+
+              $("sanction-message")
+                .textContent =
+                "Sanction enregistrée.";
+
+            }
+          );
+
+        return;
+      }
+
     }
-
-
-    /* EMPLOI DU TEMPS */
-
-    if (page === "emploi") {
-
-      result(
-        target,
-        `
-          <strong>Emploi du temps</strong>
-          <br><br>
-
-          Lundi — Français 08:00
-          <br>
-
-          Mardi — Mathématiques 10:00
-          <br>
-
-          Jeudi — Histoire 14:00
-        `
-      );
-
-      return;
-    }
-
-
-    /* AVERTISSEMENTS ÉLÈVE */
-
-    if (page === "avertissements-eleve") {
-
-      result(
-        target,
-        `
-          <strong>Mes avertissements</strong>
-          <br><br>
-
-          Aucun avertissement.
-        `
-      );
-
-      return;
-    }
-
-
-    /* SANCTIONS ÉLÈVE */
-
-    if (page === "sanctions-eleve") {
-
-      result(
-        target,
-        `
-          <strong>Mes sanctions</strong>
-          <br><br>
-
-          Aucune sanction.
-        `
-      );
-
-      return;
-    }
-
-
-    /* AJOUT NOTE */
-
-    if (page === "ajouter-note") {
-
-      await afficherFormulaireNote();
-
-      return;
-    }
-
-
-    /* APPRÉCIATION */
-
-    if (page === "appreciation") {
-
-      result(
-        target,
-        `
-          <strong>Appréciation</strong>
-
-          <br><br>
-
-          <textarea
-            id="new-app"
-            placeholder="Écrire une appréciation"
-          ></textarea>
-
-          <br>
-
-          <button id="save-app">
-            Enregistrer
-          </button>
-
-          <p id="app-message"></p>
-        `
-      );
-
-      $("save-app").addEventListener(
-        "click",
-        () => {
-
-          $("app-message").textContent =
-            "Appréciation enregistrée.";
-
-        }
-      );
-
-      return;
-    }
-
-
-    /* AVERTISSEMENT */
-
-    if (page === "avertissement") {
-
-      result(
-        target,
-        `
-          <strong>Avertissement</strong>
-
-          <br><br>
-
-          <textarea
-            id="new-warning"
-            placeholder="Motif de l'avertissement"
-          ></textarea>
-
-          <br>
-
-          <button id="save-warning">
-            Enregistrer
-          </button>
-
-          <p id="warning-message"></p>
-        `
-      );
-
-      $("save-warning").addEventListener(
-        "click",
-        () => {
-
-          $("warning-message").textContent =
-            "Avertissement enregistré.";
-
-        }
-      );
-
-      return;
-    }
-
-
-    /* SANCTION */
-
-    if (page === "sanction") {
-
-      result(
-        target,
-        `
-          <strong>Sanction</strong>
-
-          <br><br>
-
-          <textarea
-            id="new-sanction"
-            placeholder="Motif de la sanction"
-          ></textarea>
-
-          <br>
-
-          <button id="save-sanction">
-            Enregistrer
-          </button>
-
-          <p id="sanction-message"></p>
-        `
-      );
-
-      $("save-sanction").addEventListener(
-        "click",
-        () => {
-
-          $("sanction-message").textContent =
-            "Sanction enregistrée.";
-
-        }
-      );
-
-      return;
-    }
-
-  });
-
+  );
 });
 
 
