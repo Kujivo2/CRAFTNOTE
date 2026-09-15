@@ -29,9 +29,7 @@
 
     <!-- CONNEXION ÉLÈVE -->
     <section id="login-eleve" class="card hidden">
-      <button class="back" data-back>
-        ← Retour
-      </button>
+      <button class="back" data-back>← Retour</button>
 
       <h2>Session élève</h2>
 
@@ -58,16 +56,14 @@
       </button>
 
       <p class="hint">
-        Utilise l'adresse e-mail et le mot de passe du compte Firebase.
+        Utilise ton compte CRAFTNOTE.
       </p>
     </section>
 
 
     <!-- CONNEXION PROFESSEUR -->
     <section id="login-prof" class="card hidden">
-      <button class="back" data-back>
-        ← Retour
-      </button>
+      <button class="back" data-back>← Retour</button>
 
       <h2>Session professeur</h2>
 
@@ -94,13 +90,14 @@
       </button>
 
       <p class="hint">
-        Utilise l'adresse e-mail et le mot de passe du compte Firebase.
+        Utilise ton compte CRAFTNOTE.
       </p>
     </section>
 
 
     <!-- ESPACE ÉLÈVE -->
     <section id="eleve" class="card hidden">
+
       <div class="topline">
         <h2>Espace élève</h2>
 
@@ -110,10 +107,11 @@
       </div>
 
       <p class="muted">
-        Bienvenue dans ton espace élève.
+        Bienvenue
       </p>
 
       <div class="grid">
+
         <button data-page="notes-eleve">
           Mes notes
         </button>
@@ -129,14 +127,17 @@
         <button data-page="sanctions-eleve">
           Mes sanctions
         </button>
+
       </div>
 
       <div id="eleve-result" class="result"></div>
+
     </section>
 
 
     <!-- ESPACE PROFESSEUR -->
     <section id="prof" class="card hidden">
+
       <div class="topline">
         <h2>Espace professeur</h2>
 
@@ -150,6 +151,7 @@
       </p>
 
       <div class="grid">
+
         <button data-page="ajouter-note">
           Ajouter une note
         </button>
@@ -165,17 +167,17 @@
         <button data-page="sanction">
           Sanction
         </button>
+
       </div>
 
       <div id="prof-result" class="result"></div>
+
     </section>
 
   </main>
 
 
-  <!-- IMPORTANT :
-       type="module" permet à script.js
-       d'utiliser Firebase. -->
+  <!-- Firebase + fonctionnement du site -->
   <script type="module" src="script.js"></script>
 
 </body>
