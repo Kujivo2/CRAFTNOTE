@@ -1,3 +1,32 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4",
+  authDomain: "craftnote-5b31b.firebaseapp.com",
+  projectId: "craftnote-5b31b",
+  storageBucket: "craftnote-5b31b.firebasestorage.app",
+  messagingSenderId: "911653521182",
+  appId: "1:911653521182:web:79dcc4f55760ca6cfceb0f",
+  measurementId: "G-XLL6X8L2B6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 const $ = (id) => document.getElementById(id);
 
 const screens = [
@@ -22,96 +51,54 @@ const data = {
   ]
 };
 
-let auth = null;
+function show(id) {
+  screens.forEach((screen) => {
+    $(screen).classList.toggle("hidden", screen !== id);
+  });
+}
+
+function result(id, html) {
+  $(id).innerHTML = html;
+}
 
 // -----------------------------
 // Navigation
 // -----------------------------
 
-function show(id) {
-  screens.forEach((screen) => {
-    const element = $(screen);
-
-    if (element) {
-      element.classList.toggle("hidden", screen !== id);
-    }
-  });
-}
-
-function result(id, html) {
-  const element = $(id);
-
-  if (element) {
-    element.innerHTML = html;
-  }
-}
-
-// Boutons accueil
 document.querySelectorAll("[data-open]").forEach((button) => {
   button.addEventListener("click", () => {
     show(button.dataset.open);
   });
 });
 
-// Boutons retour
 document.querySelectorAll("[data-back]").forEach((button) => {
   button.addEventListener("click", () => {
     show("home");
   });
 });
 
-// Déconnexion
 document.querySelectorAll("[data-home]").forEach((button) => {
   button.addEventListener("click", async () => {
-    if (auth) {
-      try {
-        await auth.signOut();
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
+    await signOut(auth);
     show("home");
   });
 });
 
 // -----------------------------
-// Firebase
+// Chercher le profil Firestore
 // -----------------------------
 
-async function chargerFirebase() {
-  try {
-    const firebaseApp = await import(
-      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
-    );
+async function getProfile(email) {
+  const profiles = collection(db, "profiles");
+  const q = query(profiles, where("email", "==", email));
+  const snapshot = await getDocs(q);
 
-    const firebaseAuth = await import(
-      "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"
-    );
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4",
-      authDomain: "craftnote-5b31b.firebaseapp.com",
-      projectId: "craftnote-5b31b",
-      storageBucket: "craftnote-5b31b.firebasestorage.app",
-      messagingSenderId: "911653521182",
-      appId: "1:911653521182:web:79dcc4f55760ca6cfceb0f",
-      measurementId: "G-XLL6X8L2B6"
-    };
-
-    const firebase = firebaseApp.initializeApp(firebaseConfig);
-
-    auth = firebaseAuth.getAuth(firebase);
-
-    return firebaseAuth;
-  } catch (error) {
-    console.error("Erreur Firebase :", error);
+  if (snapshot.empty) {
     return null;
   }
-}
 
-// On charge Firebase sans bloquer les boutons
-const firebaseAuth = await chargerFirebase();
+  return snapshot.docs[0].data();
+}
 
 // -----------------------------
 // Connexion élève
@@ -122,23 +109,34 @@ $("eleve-connexion").addEventListener("click", async () => {
   const password = $("eleve-motdepasse").value;
 
   if (!email || !password) {
-    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
-    return;
-  }
-
-  if (!firebaseAuth || !auth) {
-    alert("Firebase n'est pas disponible. Vérifie la configuration.");
+    alert("Veuillez remplir les deux champs.");
     return;
   }
 
   try {
-    await firebaseAuth.signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+    await signInWithEmailAndPassword(auth, email, password);
+
+    const profile = await getProfile(email);
+
+    if (!profile) {
+      await signOut(auth);
+      alert("Aucun profil CRAFTNOTE trouvé pour ce compte.");
+      return;
+    }
+
+    if (profile.role !== "student") {
+      await signOut(auth);
+      alert("Ce compte n'est pas un compte élève.");
+      return;
+    }
+
+    const nom = profile.nom || "Élève";
+
+    document.querySelector("#eleve .muted").textContent =
+      `Bienvenue ${nom}`;
 
     show("eleve");
+
   } catch (error) {
     console.error(error);
 
@@ -147,7 +145,7 @@ $("eleve-connexion").addEventListener("click", async () => {
     } else if (error.code === "auth/invalid-email") {
       alert("Adresse e-mail invalide.");
     } else {
-      alert("Erreur de connexion Firebase.");
+      alert("Erreur lors de la connexion.");
     }
   }
 });
@@ -161,23 +159,34 @@ $("prof-connexion").addEventListener("click", async () => {
   const password = $("prof-motdepasse").value;
 
   if (!email || !password) {
-    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
-    return;
-  }
-
-  if (!firebaseAuth || !auth) {
-    alert("Firebase n'est pas disponible. Vérifie la configuration.");
+    alert("Veuillez remplir les deux champs.");
     return;
   }
 
   try {
-    await firebaseAuth.signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+    await signInWithEmailAndPassword(auth, email, password);
+
+    const profile = await getProfile(email);
+
+    if (!profile) {
+      await signOut(auth);
+      alert("Aucun profil CRAFTNOTE trouvé pour ce compte.");
+      return;
+    }
+
+    if (profile.role !== "teacher") {
+      await signOut(auth);
+      alert("Ce compte n'est pas un compte professeur.");
+      return;
+    }
+
+    const nom = profile.nom || "Professeur";
+
+    document.querySelector("#prof .muted").textContent =
+      `Bienvenue ${nom}`;
 
     show("prof");
+
   } catch (error) {
     console.error(error);
 
@@ -186,7 +195,7 @@ $("prof-connexion").addEventListener("click", async () => {
     } else if (error.code === "auth/invalid-email") {
       alert("Adresse e-mail invalide.");
     } else {
-      alert("Erreur de connexion Firebase.");
+      alert("Erreur lors de la connexion.");
     }
   }
 });
@@ -324,9 +333,5 @@ function saveNote() {
 function saveText(message) {
   result("prof-result", `<strong>${message}</strong>`);
 }
-
-// -----------------------------
-// État de connexion
-// -----------------------------
 
 show("home");
