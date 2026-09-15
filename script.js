@@ -1,25 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-// Configuration Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4",
-  authDomain: "craftnote-5b31b.firebaseapp.com",
-  projectId: "craftnote-5b31b",
-  storageBucket: "craftnote-5b31b.firebasestorage.app",
-  messagingSenderId: "911653521182",
-  appId: "1:911653521182:web:79dcc4f55760ca6cfceb0f",
-  measurementId: "G-XLL6X8L2B6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
 const $ = (id) => document.getElementById(id);
 
 const screens = [
@@ -44,105 +22,183 @@ const data = {
   ]
 };
 
+let auth = null;
+
+// -----------------------------
+// Navigation
+// -----------------------------
+
 function show(id) {
-  screens.forEach((s) => {
-    $(s).classList.toggle("hidden", s !== id);
+  screens.forEach((screen) => {
+    const element = $(screen);
+
+    if (element) {
+      element.classList.toggle("hidden", screen !== id);
+    }
   });
 }
 
 function result(id, html) {
-  $(id).innerHTML = html;
+  const element = $(id);
+
+  if (element) {
+    element.innerHTML = html;
+  }
 }
 
-// Navigation
+// Boutons accueil
 document.querySelectorAll("[data-open]").forEach((button) => {
-  button.onclick = () => show(button.dataset.open);
+  button.addEventListener("click", () => {
+    show(button.dataset.open);
+  });
 });
 
+// Boutons retour
 document.querySelectorAll("[data-back]").forEach((button) => {
-  button.onclick = () => show("home");
+  button.addEventListener("click", () => {
+    show("home");
+  });
 });
 
 // Déconnexion
 document.querySelectorAll("[data-home]").forEach((button) => {
-  button.onclick = async () => {
-    try {
-      await signOut(auth);
-      show("home");
-    } catch (error) {
-      console.error(error);
-      alert("Impossible de se déconnecter.");
+  button.addEventListener("click", async () => {
+    if (auth) {
+      try {
+        await auth.signOut();
+      } catch (error) {
+        console.error(error);
+      }
     }
-  };
+
+    show("home");
+  });
 });
 
-// Connexion élève avec Firebase
-$("eleve-connexion").onclick = async () => {
+// -----------------------------
+// Firebase
+// -----------------------------
+
+async function chargerFirebase() {
+  try {
+    const firebaseApp = await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js"
+    );
+
+    const firebaseAuth = await import(
+      "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js"
+    );
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4",
+      authDomain: "craftnote-5b31b.firebaseapp.com",
+      projectId: "craftnote-5b31b",
+      storageBucket: "craftnote-5b31b.firebasestorage.app",
+      messagingSenderId: "911653521182",
+      appId: "1:911653521182:web:79dcc4f55760ca6cfceb0f",
+      measurementId: "G-XLL6X8L2B6"
+    };
+
+    const firebase = firebaseApp.initializeApp(firebaseConfig);
+
+    auth = firebaseAuth.getAuth(firebase);
+
+    return firebaseAuth;
+  } catch (error) {
+    console.error("Erreur Firebase :", error);
+    return null;
+  }
+}
+
+// On charge Firebase sans bloquer les boutons
+const firebaseAuth = await chargerFirebase();
+
+// -----------------------------
+// Connexion élève
+// -----------------------------
+
+$("eleve-connexion").addEventListener("click", async () => {
   const email = $("eleve-identifiant").value.trim();
   const password = $("eleve-motdepasse").value;
 
   if (!email || !password) {
-    alert("Veuillez renseigner votre e-mail et votre mot de passe.");
+    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
+    return;
+  }
+
+  if (!firebaseAuth || !auth) {
+    alert("Firebase n'est pas disponible. Vérifie la configuration.");
     return;
   }
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    await firebaseAuth.signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
     show("eleve");
   } catch (error) {
     console.error(error);
-    afficherErreurFirebase(error);
-  }
-};
 
-// Connexion professeur avec Firebase
-$("prof-connexion").onclick = async () => {
+    if (error.code === "auth/invalid-credential") {
+      alert("Adresse e-mail ou mot de passe incorrect.");
+    } else if (error.code === "auth/invalid-email") {
+      alert("Adresse e-mail invalide.");
+    } else {
+      alert("Erreur de connexion Firebase.");
+    }
+  }
+});
+
+// -----------------------------
+// Connexion professeur
+// -----------------------------
+
+$("prof-connexion").addEventListener("click", async () => {
   const email = $("prof-identifiant").value.trim();
   const password = $("prof-motdepasse").value;
 
   if (!email || !password) {
-    alert("Veuillez renseigner votre e-mail et votre mot de passe.");
+    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
+    return;
+  }
+
+  if (!firebaseAuth || !auth) {
+    alert("Firebase n'est pas disponible. Vérifie la configuration.");
     return;
   }
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    await firebaseAuth.signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
     show("prof");
   } catch (error) {
     console.error(error);
-    afficherErreurFirebase(error);
-  }
-};
 
-// Messages d'erreur Firebase
-function afficherErreurFirebase(error) {
-  switch (error.code) {
-    case "auth/invalid-credential":
+    if (error.code === "auth/invalid-credential") {
       alert("Adresse e-mail ou mot de passe incorrect.");
-      break;
-
-    case "auth/invalid-email":
-      alert("L'adresse e-mail est invalide.");
-      break;
-
-    case "auth/too-many-requests":
-      alert("Trop de tentatives. Réessayez plus tard.");
-      break;
-
-    case "auth/network-request-failed":
-      alert("Problème de connexion Internet.");
-      break;
-
-    default:
-      alert("Erreur de connexion.");
-      console.error(error);
+    } else if (error.code === "auth/invalid-email") {
+      alert("Adresse e-mail invalide.");
+    } else {
+      alert("Erreur de connexion Firebase.");
+    }
   }
-}
+});
 
-// Pages
+// -----------------------------
+// Pages élève / professeur
+// -----------------------------
+
 document.querySelectorAll("[data-page]").forEach((button) => {
-  button.onclick = () => {
+  button.addEventListener("click", () => {
     const page = button.dataset.page;
+
     const target = button.closest("#eleve")
       ? "eleve-result"
       : "prof-result";
@@ -187,9 +243,11 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         `
         <strong>Ajouter une note</strong><br>
         <input id="new-note" placeholder="Élève — Matière — Note">
-        <button onclick="saveNote()">Enregistrer</button>
+        <button id="save-note-button">Enregistrer</button>
         `
       );
+
+      $("save-note-button").addEventListener("click", saveNote);
     }
 
     if (page === "appreciation") {
@@ -198,11 +256,13 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         `
         <strong>Appréciation</strong><br>
         <textarea id="new-app" placeholder="Écrire une appréciation"></textarea>
-        <button onclick="saveText('Appréciation enregistrée.')">
-          Enregistrer
-        </button>
+        <button id="save-app-button">Enregistrer</button>
         `
       );
+
+      $("save-app-button").addEventListener("click", () => {
+        saveText("Appréciation enregistrée.");
+      });
     }
 
     if (page === "avertissement") {
@@ -211,11 +271,13 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         `
         <strong>Avertissement</strong><br>
         <textarea id="new-warning" placeholder="Motif de l’avertissement"></textarea>
-        <button onclick="saveText('Avertissement enregistré.')">
-          Enregistrer
-        </button>
+        <button id="save-warning-button">Enregistrer</button>
         `
       );
+
+      $("save-warning-button").addEventListener("click", () => {
+        saveText("Avertissement enregistré.");
+      });
     }
 
     if (page === "sanction") {
@@ -224,41 +286,47 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         `
         <strong>Sanction</strong><br>
         <textarea id="new-sanction" placeholder="Motif de la sanction"></textarea>
-        <button onclick="saveText('Sanction enregistrée.')">
-          Enregistrer
-        </button>
+        <button id="save-sanction-button">Enregistrer</button>
         `
       );
+
+      $("save-sanction-button").addEventListener("click", () => {
+        saveText("Sanction enregistrée.");
+      });
     }
-  };
+  });
 });
 
-// Enregistrement démo d'une note
-window.saveNote = () => {
+// -----------------------------
+// Fonctions
+// -----------------------------
+
+function saveNote() {
   const input = $("new-note");
 
   if (!input) return;
 
   const value = input.value.trim();
 
-  if (value) {
-    data.notes.push(value);
-    result("prof-result", "Note enregistrée.");
+  if (!value) {
+    alert("Écris une note avant d'enregistrer.");
+    return;
   }
-};
 
-// Messages démo
-window.saveText = (message) => {
-  result("prof-result", message);
-};
+  data.notes.push(value);
 
-// Vérification de l'état de connexion
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log("Utilisateur connecté :", user.email);
-  } else {
-    console.log("Aucun utilisateur connecté.");
-  }
-});
+  result(
+    "prof-result",
+    "<strong>Note enregistrée.</strong>"
+  );
+}
+
+function saveText(message) {
+  result("prof-result", `<strong>${message}</strong>`);
+}
+
+// -----------------------------
+// État de connexion
+// -----------------------------
 
 show("home");
