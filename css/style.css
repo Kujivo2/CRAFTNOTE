@@ -1,0 +1,167 @@
+/* ---------- Base ---------- */
+
+:root {
+  color-scheme: dark;
+  font-family: Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #071a33;
+  color: #fff;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(36px, 8vw, 64px);
+  letter-spacing: 2px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+/* ---------- Mise en page ---------- */
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(100%, 520px);
+  background: #102b49;
+  border: 1px solid #294766;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 20px 60px #0003;
+}
+
+.home-card {
+  text-align: center;
+}
+
+.home-card p {
+  color: #b9cde1;
+  font-size: 18px;
+}
+
+.actions,
+.grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.topline h2 {
+  margin-bottom: 0;
+}
+
+.result {
+  margin-top: 22px;
+  background: #0b213a;
+  border-radius: 12px;
+  padding: 16px;
+  line-height: 1.7;
+}
+
+.result:empty {
+  display: none;
+}
+
+.entry-card {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #294766;
+  border-radius: 10px;
+}
+
+/* ---------- Formulaires ---------- */
+
+button,
+input,
+textarea,
+select {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #3b5c7b;
+  padding: 13px;
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  background: #0b213a;
+  color: #fff;
+  margin-top: 12px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+form button,
+.result button {
+  margin-top: 12px;
+}
+
+button {
+  background: #fff;
+  color: #102b49;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(0.94);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.back,
+.small {
+  width: auto;
+  padding: 8px 12px;
+  margin-bottom: 18px;
+}
+
+.topline .small {
+  margin-bottom: 0;
+}
+
+/* ---------- Texte ---------- */
+
+.muted,
+.hint {
+  color: #b9cde1;
+}
+
+.hint {
+  font-size: 12px;
+}
+
+/* ---------- Utilitaires ---------- */
+
+.hidden {
+  display: none !important;
+}

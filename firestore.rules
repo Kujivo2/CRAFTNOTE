@@ -1,0 +1,59 @@
+rules_version = '2';
+
+// À copier dans Firebase Console > Firestore Database > Règles, puis "Publier".
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isTeacher() {
+      return signedIn()
+        && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == "teacher";
+    }
+
+    // Un prof lit tout ; un élève ne lit que ce qui le concerne.
+    function canRead() {
+      return isTeacher()
+        || (signedIn() && resource.data.eleveUid == request.auth.uid);
+    }
+
+    // Seul un prof peut créer, et en son propre nom.
+    function canCreate() {
+      return isTeacher()
+        && request.resource.data.professeurUid == request.auth.uid;
+    }
+
+    // Profils : créés depuis la console Firebase uniquement,
+    // personne ne peut changer son rôle depuis le site.
+    match /profiles/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isTeacher());
+      allow write: if false;
+    }
+
+    match /grades/{id} {
+      allow read: if canRead();
+      allow create: if canCreate();
+      allow update, delete: if false;
+    }
+
+    match /warnings/{id} {
+      allow read: if canRead();
+      allow create: if canCreate();
+      allow update, delete: if false;
+    }
+
+    match /sanctions/{id} {
+      allow read: if canRead();
+      allow create: if canCreate();
+      allow update, delete: if false;
+    }
+
+    match /appreciations/{id} {
+      allow read: if canRead();
+      allow create: if canCreate();
+      allow update, delete: if false;
+    }
+  }
+}
