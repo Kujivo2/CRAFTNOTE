@@ -4,181 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRAFTNOTE — Mantes-la-Jolie</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/main.js"></script>
 </head>
-
 <body>
   <main class="page">
 
-    <!-- ACCUEIL -->
+    <!-- Accueil -->
     <section id="home" class="card home-card">
       <h1>CRAFTNOTE</h1>
       <p>Mantes-la-Jolie</p>
 
       <div class="actions">
-        <button data-open="login-eleve">
-          Session élève
-        </button>
-
-        <button data-open="login-prof">
-          Session professeur
-        </button>
+        <button type="button" data-open="login-eleve">Session élève</button>
+        <button type="button" data-open="login-prof">Session professeur</button>
       </div>
     </section>
 
-
-    <!-- CONNEXION ÉLÈVE -->
+    <!-- Connexion élève -->
     <section id="login-eleve" class="card hidden">
-      <button class="back" data-back>← Retour</button>
+      <button type="button" class="back" data-back>← Retour</button>
 
       <h2>Session élève</h2>
+      <p class="muted">Connecte-toi pour consulter tes informations.</p>
 
-      <p class="muted">
-        Connecte-toi pour consulter tes informations.
-      </p>
+      <form id="login-eleve-form">
+        <input id="eleve-identifiant" type="email" placeholder="Adresse e-mail" autocomplete="email">
+        <input id="eleve-motdepasse" type="password" placeholder="Mot de passe" autocomplete="current-password">
+        <button type="submit">Se connecter</button>
+      </form>
 
-      <input
-        id="eleve-identifiant"
-        type="email"
-        placeholder="Adresse e-mail"
-        autocomplete="email"
-      >
-
-      <input
-        id="eleve-motdepasse"
-        type="password"
-        placeholder="Mot de passe"
-        autocomplete="current-password"
-      >
-
-      <button id="eleve-connexion">
-        Se connecter
-      </button>
-
-      <p class="hint">
-        Utilise ton compte CRAFTNOTE.
-      </p>
+      <p class="hint">Utilise ton compte CRAFTNOTE.</p>
     </section>
 
-
-    <!-- CONNEXION PROFESSEUR -->
+    <!-- Connexion professeur -->
     <section id="login-prof" class="card hidden">
-      <button class="back" data-back>← Retour</button>
+      <button type="button" class="back" data-back>← Retour</button>
 
       <h2>Session professeur</h2>
+      <p class="muted">Connecte-toi pour gérer les dossiers scolaires.</p>
 
-      <p class="muted">
-        Connecte-toi pour gérer les dossiers scolaires.
-      </p>
+      <form id="login-prof-form">
+        <input id="prof-identifiant" type="email" placeholder="Adresse e-mail" autocomplete="email">
+        <input id="prof-motdepasse" type="password" placeholder="Mot de passe" autocomplete="current-password">
+        <button type="submit">Se connecter</button>
+      </form>
 
-      <input
-        id="prof-identifiant"
-        type="email"
-        placeholder="Adresse e-mail"
-        autocomplete="email"
-      >
-
-      <input
-        id="prof-motdepasse"
-        type="password"
-        placeholder="Mot de passe"
-        autocomplete="current-password"
-      >
-
-      <button id="prof-connexion">
-        Se connecter
-      </button>
-
-      <p class="hint">
-        Utilise ton compte CRAFTNOTE.
-      </p>
+      <p class="hint">Utilise ton compte CRAFTNOTE.</p>
     </section>
 
-
-    <!-- ESPACE ÉLÈVE -->
+    <!-- Espace élève -->
     <section id="eleve" class="card hidden">
-
       <div class="topline">
         <h2>Espace élève</h2>
-
-        <button class="small" data-home>
-          Déconnexion
-        </button>
+        <button type="button" class="small" data-home>Déconnexion</button>
       </div>
 
-      <p class="muted">
-        Bienvenue
-      </p>
+      <p id="eleve-welcome" class="muted">Bienvenue</p>
 
       <div class="grid">
-
-        <button data-page="notes-eleve">
-          Mes notes
-        </button>
-
-        <button data-page="emploi">
-          Emploi du temps
-        </button>
-
-        <button data-page="avertissements-eleve">
-          Mes avertissements
-        </button>
-
-        <button data-page="sanctions-eleve">
-          Mes sanctions
-        </button>
-
+        <button type="button" data-page="notes-eleve">Mes notes</button>
+        <button type="button" data-page="emploi">Emploi du temps</button>
+        <button type="button" data-page="avertissements-eleve">Mes avertissements</button>
+        <button type="button" data-page="sanctions-eleve">Mes sanctions</button>
+        <button type="button" data-page="appreciations-eleve">Mes appréciations</button>
       </div>
 
       <div id="eleve-result" class="result"></div>
-
     </section>
 
-
-    <!-- ESPACE PROFESSEUR -->
+    <!-- Espace professeur -->
     <section id="prof" class="card hidden">
-
       <div class="topline">
         <h2>Espace professeur</h2>
-
-        <button class="small" data-home>
-          Déconnexion
-        </button>
+        <button type="button" class="small" data-home>Déconnexion</button>
       </div>
 
-      <p class="muted">
-        Gestion scolaire
-      </p>
+      <p id="prof-welcome" class="muted">Gestion scolaire</p>
 
       <div class="grid">
-
-        <button data-page="ajouter-note">
-          Ajouter une note
-        </button>
-
-        <button data-page="appreciation">
-          Appréciation
-        </button>
-
-        <button data-page="avertissement">
-          Avertissement
-        </button>
-
-        <button data-page="sanction">
-          Sanction
-        </button>
-
+        <button type="button" data-page="ajouter-note">Ajouter une note</button>
+        <button type="button" data-page="appreciation">Appréciation</button>
+        <button type="button" data-page="avertissement">Avertissement</button>
+        <button type="button" data-page="sanction">Sanction</button>
       </div>
 
       <div id="prof-result" class="result"></div>
-
     </section>
 
   </main>
-
-
-  <!-- Firebase + fonctionnement du site -->
-  <script type="module" src="script.js"></script>
-
 </body>
 </html>
