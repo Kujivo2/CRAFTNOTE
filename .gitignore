@@ -2,3 +2,16 @@
 Thumbs.db
 .vscode/
 *.zip
+
+# Cles de compte de service Firebase : ne jamais commiter
+cle-service.json
+*-service-account*.json
+*firebase-adminsdk*.json
+*.pem
+rapport-existant.json
+
+# Referentiel de travail : contient la liste complete des comptes
+referentiel-a-remplir.csv
+node_modules/
+.next/
+coverage/
