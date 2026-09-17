@@ -1,0 +1,12 @@
+identifiant,nom,prenom,role,groupe,matiere,age,telephone
+lea.martin@craftnote.rp,Martin,Léa,eleve,Groupe 5,,15,
+hugo.bernard@craftnote.rp,Bernard,Hugo,eleve,Groupe 5,,15,
+noe.tissot@craftnote.rp,Tissot,Noé,eleve,Groupe 5,,16,
+ana.moreau@craftnote.rp,Moreau,Ana,eleve,Groupe 5,,15,
+p.vasseur@craftnote.rp,Vasseur,Paul,professeur,Groupe 5|Groupe 3,Histoire,41,
+c.renard@craftnote.rp,Renard,Claire,professeur,Groupe 5,Mathématiques|Physique,38,
+m.roblochon@craftnote.rp,Roblochon,Marc,professeur,Groupe 3|Groupe 5,Sport,35,
+s.aubry@craftnote.rp,Aubry,Sophie,cpe,,,44,
+k.diallo@craftnote.rp,Diallo,Karim,surveillant,,,26,
+f.lemoine@craftnote.rp,Lemoine,Françoise,direction,,,52,
+admin@craftnote.rp,Tony,Admin,administrateur,,,,
