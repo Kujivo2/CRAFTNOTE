@@ -3,16 +3,10 @@ Thumbs.db
 .vscode/
 *.zip
 
-# Dependencies
-node_modules/
-
 # Next.js build
 .next/
 out/
 next-env.d.ts
-
-# TypeScript
-*.tsbuildinfo
 
 # Secrets / credentials
 .env
@@ -23,3 +17,16 @@ serviceAccount*.json
 
 # Local artifacts
 rapport-existant.json
+# Cles de compte de service Firebase : ne jamais commiter
+cle-service.json
+*-service-account*.json
+*firebase-adminsdk*.json
+*.pem
+rapport-existant.json
+
+# Referentiel de travail : contient la liste complete des comptes
+referentiel-a-remplir.csv
+node_modules/
+.next/
+coverage/
+*.tsbuildinfo
