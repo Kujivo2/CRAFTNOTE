@@ -9,13 +9,14 @@
 
 import { readFileSync } from 'node:fs';
 
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
-import { type Firestore, getFirestore } from 'firebase-admin/firestore';
+import type { Firestore } from 'firebase-admin/firestore';
+
+import { cible, demarrer, getFirestore, surEmulateur } from './_firebase';
 
 const FICHIER = process.argv[2];
 const APPLIQUER = process.argv.includes('--appliquer');
 const FORCER_PRODUCTION = process.argv.includes('--forcer-production');
-const SUR_EMULATEUR = process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+const SUR_EMULATEUR = surEmulateur();
 
 if (FICHIER === undefined) {
   console.error('Usage : npx tsx scripts/restaurer.ts <fichier.json> [--appliquer]');
@@ -33,7 +34,7 @@ if (APPLIQUER && !SUR_EMULATEUR && !FORCER_PRODUCTION) {
 type Document = { readonly id: string; readonly donnees: unknown; readonly sous?: Contenu };
 type Contenu = Record<string, Document[]>;
 
-initializeApp(SUR_EMULATEUR ? { projectId: 'craftnote-5b31b' } : { credential: applicationDefault() });
+demarrer();
 const db = getFirestore();
 
 const sauvegarde = JSON.parse(readFileSync(FICHIER, 'utf8')) as {
@@ -56,7 +57,7 @@ async function ecrire(base: Firestore, chemin: string, documents: readonly Docum
 }
 
 console.log(`\nSauvegarde du ${sauvegarde.genereLe}`);
-console.log(`Cible : ${SUR_EMULATEUR ? 'émulateur' : 'PRODUCTION'}`);
+console.log(`Cible : ${cible()}`);
 console.log(APPLIQUER ? 'Mode : écriture\n' : 'Mode : à blanc, rien n’est écrit\n');
 
 for (const [nom, documents] of Object.entries(sauvegarde.contenu)) {

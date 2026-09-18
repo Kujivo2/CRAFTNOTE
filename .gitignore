@@ -19,3 +19,7 @@ coverage/
 
 # Sauvegardes locales : contiennent toutes les donnees
 sauvegardes/
+
+# Journaux des emulateurs
+*-debug.log
+firebase-export-*/

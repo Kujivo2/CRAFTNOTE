@@ -11,13 +11,17 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
-import { type CollectionReference, getFirestore } from 'firebase-admin/firestore';
+import type { CollectionReference } from 'firebase-admin/firestore';
+
+import { cible, demarrer, getFirestore } from './_firebase';
 
 const DOSSIER = process.argv[2] ?? 'sauvegardes';
 
-initializeApp({ credential: applicationDefault() });
+demarrer();
 const db = getFirestore();
+console.log(`
+Source : ${cible()}
+`);
 
 type Document = { readonly id: string; readonly donnees: unknown; readonly sous?: Contenu };
 type Contenu = Record<string, Document[]>;

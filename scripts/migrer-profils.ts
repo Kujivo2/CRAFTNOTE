@@ -10,12 +10,9 @@
 // ligne qui ne concorde pas est signalee et la migration s'arrete : mieux vaut corriger a la
 // main que d'ecrire un nom faux dans cinquante documents.
 
-import { applicationDefault, initializeApp } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-
 import { CATALOGUE } from '../src/auth/catalogue';
 import { MATRICE_PAR_DEFAUT, type CodeRole } from '../src/auth/matrice-defaut';
+import { cible, demarrer, getAuth, getFirestore } from './_firebase';
 
 const APPLIQUER = process.argv.includes('--appliquer');
 
@@ -33,7 +30,7 @@ const ROLES_ANCIENS: Readonly<Record<string, CodeRole>> = {
   teacher: 'professeur',
 };
 
-initializeApp({ credential: applicationDefault() });
+demarrer();
 const db = getFirestore();
 const auth = getAuth();
 
