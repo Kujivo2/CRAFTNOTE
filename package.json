@@ -11,23 +11,33 @@
     "test:suivi": "vitest",
     "typecheck": "tsc --noEmit",
     "sans-emoji": "node scripts/verifier-sans-emoji.mjs",
-    "verifier": "npm run typecheck && npm run test && npm run sans-emoji"
+    "verifier": "npm run typecheck && npm run test && npm run sans-emoji && npm run cloisonnement",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "emulateurs": "firebase emulators:start",
+    "cloisonnement": "node scripts/verifier-cloisonnement.mjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "firebase-tools": "^15.30.1",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "5.9.3",
     "vitest": "5.0.1"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "firebase": "^12.19.0",
     "firebase-admin": "^14.4.0",
     "next": "^16.3.5",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
   }
 }

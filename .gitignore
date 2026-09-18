@@ -30,3 +30,11 @@ node_modules/
 .next/
 coverage/
 *.tsbuildinfo
+
+# Sauvegardes locales : contiennent toutes les donnees
+sauvegardes/
+
+# Journaux des emulateurs
+*-debug.log
+firebase-export-*/
+uid-par-identifiant.csv

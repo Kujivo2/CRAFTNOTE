@@ -1,59 +1,22 @@
 rules_version = '2';
 
-// À copier dans Firebase Console > Firestore Database > Règles, puis "Publier".
+// Le navigateur ne parle JAMAIS a Firestore (7.2).
+//
+// Le modele de droits du 2 -- role, portee, surcharges individuelles, resolution en cascade --
+// ne s'exprime pas raisonnablement en regles de securite : les y transposer produirait des
+// regles illisibles et fausses. Toutes les lectures et toutes les ecritures passent donc par le
+// code serveur avec l'Admin SDK, dans la couche data/, ou permission et portee sont controlees.
+// L'Admin SDK contourne ces regles par conception : les fermer ne gene pas l'application.
+//
+// Le SDK client ne sert qu'a la connexion, qui touche Firebase Authentication et pas Firestore.
+//
+// Consequence assumee : pas de temps reel, un rechargement de page suffit partout.
+// Ne pas ouvrir une exception "pour aller plus vite" sur un ecran isole.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function isTeacher() {
-      return signedIn()
-        && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == "teacher";
-    }
-
-    // Un prof lit tout ; un élève ne lit que ce qui le concerne.
-    function canRead() {
-      return isTeacher()
-        || (signedIn() && resource.data.eleveUid == request.auth.uid);
-    }
-
-    // Seul un prof peut créer, et en son propre nom.
-    function canCreate() {
-      return isTeacher()
-        && request.resource.data.professeurUid == request.auth.uid;
-    }
-
-    // Profils : créés depuis la console Firebase uniquement,
-    // personne ne peut changer son rôle depuis le site.
-    match /profiles/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || isTeacher());
-      allow write: if false;
-    }
-
-    match /grades/{id} {
-      allow read: if canRead();
-      allow create: if canCreate();
-      allow update, delete: if false;
-    }
-
-    match /warnings/{id} {
-      allow read: if canRead();
-      allow create: if canCreate();
-      allow update, delete: if false;
-    }
-
-    match /sanctions/{id} {
-      allow read: if canRead();
-      allow create: if canCreate();
-      allow update, delete: if false;
-    }
-
-    match /appreciations/{id} {
-      allow read: if canRead();
-      allow create: if canCreate();
-      allow update, delete: if false;
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
