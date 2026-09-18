@@ -1,0 +1,149 @@
+@import 'tailwindcss';
+
+/* Les espaces de noms par defaut de Tailwind sont VIDES avant d'etre redefinis. Ce n'est pas
+   une precaution de style : sans ca, `bg-slate-500`, `rounded-lg` et `shadow-md` restent
+   disponibles, et le 8.2 les interdit. Ici, ils n'existent simplement pas. */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --drop-shadow-*: initial;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Palette, relevee pixel par pixel sur l'uniforme (8.3) */
+  --color-encre: #14110f;
+  --color-encre-2: #201c19;
+  --color-laiton: #c2b078;
+  --color-laiton-fonce: #8f7d45;
+  --color-laiton-lisible: #857340;
+  --color-craie: #f2e8f4;
+  --color-papier: #ffffff;
+  --color-correction: #a3231c;
+  --color-correction-clair: #d4544a;
+
+  /* Rampe de gris derivee de --encre, donc chaude : R > G > B sur les onze valeurs.
+     Contrastes mesures dans docs/05-design.md. */
+  --color-gris-05: #1c1815;
+  --color-gris-10: #262220;
+  --color-gris-20: #3a3431;
+  --color-gris-30: #4f4845;
+  --color-gris-40: #6b625e;
+  --color-gris-50: #8a807b;
+  --color-gris-60: #a79d97;
+  --color-gris-70: #c4bab4;
+  --color-gris-80: #dcd4cf;
+  --color-gris-90: #ede7e3;
+  --color-gris-95: #f6f2f0;
+
+  /* Roles : ils changent de valeur selon le theme, plus bas. */
+  --color-fond: var(--cn-fond);
+  --color-fond-2: var(--cn-fond-2);
+  --color-texte: var(--cn-texte);
+  --color-texte-2: var(--cn-texte-2);
+  --color-accent: var(--cn-accent);
+  --color-accent-texte: var(--cn-accent-texte);
+  --color-alerte: var(--cn-alerte);
+  --color-filet: var(--cn-filet);
+
+  --font-ui: var(--police-fira), system-ui, sans-serif;
+  --font-dense: var(--police-fira-condensed), var(--police-fira), sans-serif;
+  --font-document: var(--police-spectral), Georgia, serif;
+
+  /* Echelle explicite. Le 16 est le minimum d'un champ de saisie : en dessous,
+     Safari iOS zoome au focus et la page saute sous le doigt. */
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-16: 1rem;
+  --text-18: 1.125rem;
+  --text-22: 1.375rem;
+  --text-28: 1.75rem;
+
+  /* Un seul rayon, sur les champs et les boutons, nulle part ailleurs. */
+  --radius-champ: 2px;
+}
+
+/* Theme Uniforme, par defaut. */
+:root {
+  --cn-fond: #14110f;
+  --cn-fond-2: #201c19;
+  --cn-texte: #f2e8f4;
+  --cn-texte-2: #a79d97;
+  --cn-accent: #c2b078;
+  --cn-accent-texte: #14110f;
+  --cn-alerte: #d4544a;
+  --cn-filet: #3a3431;
+  color-scheme: dark;
+}
+
+/* Premiere visite sans preference enregistree : on suit le systeme (8.3). */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --cn-fond: #ffffff;
+    --cn-fond-2: #f6f2f0;
+    --cn-texte: #14110f;
+    --cn-texte-2: #4f4845;
+    --cn-accent: #857340;
+    --cn-accent-texte: #ffffff;
+    --cn-alerte: #a3231c;
+    --cn-filet: #dcd4cf;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme='papier'] {
+  --cn-fond: #ffffff;
+  --cn-fond-2: #f6f2f0;
+  --cn-texte: #14110f;
+  --cn-texte-2: #4f4845;
+  --cn-accent: #857340;
+  --cn-accent-texte: #ffffff;
+  --cn-alerte: #a3231c;
+  --cn-filet: #dcd4cf;
+  color-scheme: light;
+}
+
+:root[data-theme='uniforme'] {
+  --cn-fond: #14110f;
+  --cn-fond-2: #201c19;
+  --cn-texte: #f2e8f4;
+  --cn-texte-2: #a79d97;
+  --cn-accent: #c2b078;
+  --cn-accent-texte: #14110f;
+  --cn-alerte: #d4544a;
+  --cn-filet: #3a3431;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--cn-fond);
+  color: var(--cn-texte);
+  font-family: var(--police-fira), system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Le focus se voit et il est choisi, pas herite du navigateur (9). */
+:focus-visible {
+  outline: 2px solid var(--cn-accent);
+  outline-offset: 2px;
+}
+
+/* Les chiffres d'une colonne s'alignent. */
+.chiffres {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Le mouvement repond a une action, ou il n'existe pas (8.2). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
