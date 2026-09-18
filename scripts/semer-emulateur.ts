@@ -17,7 +17,7 @@ import { initializeApp } from 'firebase-admin/app';
 const MOT_DE_PASSE_DEV = 'craftnote-emulateur';
 const RAPPORT = process.argv[2] ?? 'rapport-existant.json';
 
-if (process.env.FIREBASE_AUTH_EMULATOR_HOST === undefined) {
+if ((process.env.FIREBASE_AUTH_EMULATOR_HOST ?? '') === '') {
   console.error(
     'Refus : FIREBASE_AUTH_EMULATOR_HOST n’est pas défini.\n' +
       'Ce script ne crée des comptes que sur l’émulateur, jamais en production.',

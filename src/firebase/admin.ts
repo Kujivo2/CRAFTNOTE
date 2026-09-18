@@ -21,8 +21,10 @@ function projet(): string {
   return process.env.FIREBASE_PROJET ?? PROJET_PAR_DEFAUT;
 }
 
+// Une variable vide vaut non definie : sinon un `FIRESTORE_EMULATOR_HOST=` traine dans un
+// environnement desactiverait silencieusement les identifiants en production.
 function surEmulateur(): boolean {
-  return process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+  return (process.env.FIRESTORE_EMULATOR_HOST ?? '') !== '';
 }
 
 // En local : GOOGLE_APPLICATION_CREDENTIALS pointe le fichier de cle.

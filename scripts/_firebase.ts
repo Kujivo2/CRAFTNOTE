@@ -11,7 +11,9 @@ import { getFirestore } from 'firebase-admin/firestore';
 
 export const PROJET = process.env.FIREBASE_PROJET ?? 'craftnote-5b31b';
 
-export const surEmulateur = (): boolean => process.env.FIRESTORE_EMULATOR_HOST !== undefined;
+// Une variable vide vaut non definie : sinon un `FIRESTORE_EMULATOR_HOST=` traine dans un
+// environnement desactiverait silencieusement les identifiants en production.
+export const surEmulateur = (): boolean => (process.env.FIRESTORE_EMULATOR_HOST ?? '') !== '';
 
 export function demarrer(): void {
   // Sur emulateur, aucun identifiant n'est fourni : c'est ce qui garantit qu'un essai local ne
