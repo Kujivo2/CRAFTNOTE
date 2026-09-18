@@ -2,3 +2,24 @@
 Thumbs.db
 .vscode/
 *.zip
+
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+next-env.d.ts
+
+# TypeScript
+*.tsbuildinfo
+
+# Secrets / credentials
+.env
+.env.local
+.env*.local
+*firebase-adminsdk*.json
+serviceAccount*.json
+
+# Local artifacts
+rapport-existant.json
