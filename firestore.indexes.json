@@ -1,0 +1,176 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "utilisateurs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roleId", "order": "ASCENDING" },
+        { "fieldPath": "nom", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "utilisateurs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "actif", "order": "ASCENDING" },
+        { "fieldPath": "nom", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "profilsEleves",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "groupeId", "order": "ASCENDING" },
+        { "fieldPath": "estDelegue", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "services",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "groupeId", "order": "ASCENDING" },
+        { "fieldPath": "matiereNom", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "seances",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "soireeId", "order": "ASCENDING" },
+        { "fieldPath": "groupeId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "seances",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "serviceId", "order": "ASCENDING" },
+        { "fieldPath": "soireeId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "evaluations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "serviceId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "evaluations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "groupeId", "order": "ASCENDING" },
+        { "fieldPath": "publiee", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eleveId", "order": "ASCENDING" },
+        { "fieldPath": "periodeId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "serviceId", "order": "ASCENDING" },
+        { "fieldPath": "evaluationId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "presences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eleveId", "order": "ASCENDING" },
+        { "fieldPath": "periodeId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "absences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eleveId", "order": "ASCENDING" },
+        { "fieldPath": "debut", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "absences",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "periodeId", "order": "ASCENDING" },
+        { "fieldPath": "justifiee", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "mesures",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eleveId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "mesures",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "categorie", "order": "ASCENDING" },
+        { "fieldPath": "periodeId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "retenues",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "soireeId", "order": "ASCENDING" },
+        { "fieldPath": "creneauId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "retenues",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eleveId", "order": "ASCENDING" },
+        { "fieldPath": "statut", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "devoirs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "groupeId", "order": "ASCENDING" },
+        { "fieldPath": "publie", "order": "ASCENDING" },
+        { "fieldPath": "seancePourId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "journalModifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "acteurId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "journalModifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "evenement", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "auditLog",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "entite", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

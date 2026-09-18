@@ -16,3 +16,6 @@ node_modules/
 .next/
 coverage/
 *.tsbuildinfo
+
+# Sauvegardes locales : contiennent toutes les donnees
+sauvegardes/
