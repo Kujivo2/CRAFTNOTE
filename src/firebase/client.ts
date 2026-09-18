@@ -7,21 +7,38 @@ import { type Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
 //
 // `firebase/firestore` n'est importé nulle part côté client, et c'est vérifié par
 // scripts/verifier-cloisonnement.mjs : le navigateur ne parle jamais à Firestore (7.2).
-// Conséquence assumée, pas de temps réel — un rechargement de page suffit partout.
 //
-// La clé API web est publique par conception : elle désigne le projet, elle ne prouve rien.
-// La sécurité tient aux règles Firestore, qui refusent tout, et au contrôle fait dans data/.
-
+// Cette configuration est PUBLIQUE par conception : elle part dans le navigateur de chaque
+// élève et n'importe qui peut la lire. Elle désigne le projet, elle ne prouve rien. La sécurité
+// tient aux règles Firestore, qui refusent tout, et au contrôle fait dans data/.
+//
+// Elle vient quand même de l'environnement, pour une raison qui n'a rien à voir avec le secret :
+// elle doit désigner le MÊME projet que la clé de service côté serveur. Écrite en dur, elle
+// survit à un changement de projet et le navigateur s'authentifie alors auprès d'un projet que
+// le serveur ne connaît pas.
+//
+// Next remplace ces `process.env.NEXT_PUBLIC_*` à la construction : ils doivent donc être
+// écrits littéralement, jamais construits dynamiquement.
 const CONFIGURATION = {
-  apiKey: 'AIzaSyDiXTE9CYic8wruXrj2MJJeF78yI-0sGQ4',
-  authDomain: 'craftnote-5b31b.firebaseapp.com',
-  projectId: 'craftnote-5b31b',
-  appId: '1:911653521182:web:79dcc4f55760ca6cfceb0f',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_CLE_API ?? '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_DOMAINE_AUTH ?? '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJET ?? '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? '',
 };
+
+export function configurationManquante(): readonly string[] {
+  return Object.entries(CONFIGURATION)
+    .filter(([, valeur]) => valeur === '')
+    .map(([nom]) => nom);
+}
 
 let authentification: Auth | undefined;
 
 function application(): FirebaseApp {
+  const manquants = configurationManquante();
+  if (manquants.length > 0) {
+    throw new Error(`Configuration Firebase incomplète : ${manquants.join(', ')}.`);
+  }
   return getApps().at(0) ?? initializeApp(CONFIGURATION);
 }
 

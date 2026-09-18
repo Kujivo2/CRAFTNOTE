@@ -39,6 +39,9 @@ function formeDeLaCle(): Record<string, boolean | number | string> {
     for (const champ of ['type', 'project_id', 'client_email', 'private_key']) {
       forme[`a_${champ}`] = typeof objet[champ] === 'string' && objet[champ] !== '';
     }
+    // Le projet designe par la cle : ce n'est pas un secret, il figure aussi dans la
+    // configuration publique du navigateur. C'est justement ce qu'il faut pouvoir comparer.
+    forme.project_id = typeof objet.project_id === 'string' ? objet.project_id : 'absent';
     const cle = typeof objet.private_key === 'string' ? objet.private_key : '';
     forme.cleEnPem = cle.includes('BEGIN PRIVATE KEY');
     // Le piege classique : les \n echappes restent litteraux et la cle devient illisible.
@@ -65,6 +68,13 @@ export async function GET() {
     region: process.env.VERCEL_REGION ?? null,
     environnement: process.env.VERCEL_ENV ?? 'hors Vercel',
     cle: formeDeLaCle(),
+    // Les memes valeurs vues du navigateur : c'est leur DESACCORD qui casse la connexion.
+    configurationPublique: {
+      projet: process.env.NEXT_PUBLIC_FIREBASE_PROJET ?? 'absente',
+      domaineAuth: process.env.NEXT_PUBLIC_FIREBASE_DOMAINE_AUTH ?? 'absente',
+      cleApiPresente: (process.env.NEXT_PUBLIC_FIREBASE_CLE_API ?? '') !== '',
+      appIdPresent: (process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? '') !== '',
+    },
     modules: {
       'firebase-admin/app': chargeAdmin,
       'firebase-admin/auth': chargeAuth,
