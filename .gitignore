@@ -38,3 +38,5 @@ sauvegardes/
 *-debug.log
 firebase-export-*/
 uid-par-identifiant.csv
+.vercel
+.env*
