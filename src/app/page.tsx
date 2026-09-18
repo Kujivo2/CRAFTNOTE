@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
+import { peut } from '@/auth/peut';
 import { sessionActive } from '@/data/session';
 import { profilConnecte } from '@/data/utilisateurs';
 import { MesDroits } from '@/features/accueil/mes-droits';
@@ -61,6 +63,15 @@ export default async function Accueil() {
             : `${session.groupeIds.length} groupe${session.groupeIds.length > 1 ? 's' : ''}.`}
         </p>
       </section>
+
+      {peut(session, 'droits.gerer') && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-18">Administration</h2>
+          <Link href="/administration/droits" className="text-14 underline underline-offset-4">
+            Panneau des droits
+          </Link>
+        </section>
+      )}
 
       <MesDroits session={session} />
     </main>
