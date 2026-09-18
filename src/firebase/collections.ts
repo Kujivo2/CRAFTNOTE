@@ -18,6 +18,8 @@ import {
   type PermissionUtilisateur,
   type ProfilEleve,
   type Role,
+  type Periode,
+  type Salle,
   type Service,
   type Utilisateur,
   schemaEntreeAudit,
@@ -28,6 +30,8 @@ import {
   schemaPermissionUtilisateur,
   schemaProfilEleve,
   schemaRole,
+  schemaPeriode,
+  schemaSalle,
   schemaService,
   schemaUtilisateur,
 } from './schemas';
@@ -87,6 +91,12 @@ export const matieres = (): CollectionReference<Matiere, DocumentData> =>
 
 export const niveaux = (): CollectionReference<Niveau, DocumentData> =>
   collection('niveaux', schemaNiveau);
+
+export const salles = (): CollectionReference<Salle, DocumentData> =>
+  collection('salles', schemaSalle);
+
+export const periodes = (): CollectionReference<Periode, DocumentData> =>
+  collection('periodes', schemaPeriode);
 
 export const auditLog = (): CollectionReference<EntreeAudit, DocumentData> =>
   collection('auditLog', schemaEntreeAudit);

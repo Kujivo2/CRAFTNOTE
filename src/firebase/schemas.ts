@@ -84,6 +84,29 @@ export const schemaNiveau = z.object({
   ordre: z.number().int(),
 });
 
+export const schemaSalle = z.object({
+  nom: z.string().min(1),
+});
+
+export const schemaPeriode = z.object({
+  libelle: z.string().min(1),
+  dateDebut: z.string(),
+  dateFin: z.string(),
+  ordre: z.number().int(),
+});
+
+// etablissement/config : un document unique, d'identifiant « config ».
+export const schemaConfig = z.object({
+  nom: z.string().min(1),
+  logoUrl: z.string().nullable(),
+  saison: z.string().min(1),
+  // Options de calcul du 4.1, et colonnes desactivees par defaut du 1.
+  absentCompteZero: z.boolean(),
+  nonRenduCompteZero: z.boolean(),
+  afficherMoyenneGroupe: z.boolean(),
+  afficherRang: z.boolean(),
+});
+
 export const schemaEntreeAudit = z.object({
   acteurId: z.string().min(1),
   acteurUsurpeId: z.string().nullable(),
@@ -104,4 +127,7 @@ export type Groupe = z.infer<typeof schemaGroupe>;
 export type Service = z.infer<typeof schemaService>;
 export type Matiere = z.infer<typeof schemaMatiere>;
 export type Niveau = z.infer<typeof schemaNiveau>;
+export type Salle = z.infer<typeof schemaSalle>;
+export type Periode = z.infer<typeof schemaPeriode>;
+export type Config = z.infer<typeof schemaConfig>;
 export type EntreeAudit = z.infer<typeof schemaEntreeAudit>;
