@@ -28,3 +28,14 @@ export async function etatDuCompte(uid: string): Promise<EtatDeCompte> {
 export async function marquerConnexion(uid: string): Promise<void> {
   await utilisateurs().doc(uid).update({ derniereConnexion: new Date().toISOString() });
 }
+
+// Le profil du compte connecte, pour l'en-tete. Pas de controle de permission : la session a
+// deja ete etablie, et personne ne lit ici autre chose que son propre nom.
+export async function profilConnecte(
+  uid: string,
+): Promise<{ readonly prenom: string; readonly nom: string } | null> {
+  const document = await utilisateurs().doc(uid).get();
+  const utilisateur = document.data();
+  if (utilisateur === undefined) return null;
+  return { prenom: utilisateur.prenom, nom: utilisateur.nom };
+}
