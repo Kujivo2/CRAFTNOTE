@@ -51,6 +51,15 @@ const PROFS_PRINCIPAUX: Readonly<Record<string, string>> = {
 // titulaire ne pourra pas saisir de note, et il vaut mieux le dire que le decouvrir.
 const ROLES_NOTANTS = new Set(['professeur', 'direction', 'administrateur']);
 
+// Deux ecarts au modele, tranches et assumes. Les encoder ici evite de les signaler comme des
+// anomalies a chaque execution : un avertissement qu'on apprend a ignorer ne sert plus a rien.
+const ECARTS_ACCEPTES: Readonly<Record<string, string>> = {
+  'rose.thorns@craftnote.local':
+    'sans groupe volontairement : personnage dont on ignore encore qui il est',
+  'flora.cristofeuille@craftnote.local':
+    'documentaliste, s’occupe des livres comme au CDI et ne note pas',
+};
+
 // --- Lecture ----------------------------------------------------------------
 
 demarrer();
@@ -123,10 +132,18 @@ for (const ligne of lignes) {
         'lancez scripts/creer-comptes-manquants.ts avant celui-ci',
     );
   }
-  if (ligne.role === 'eleve' && ligne.groupes.length === 0) {
+  if (
+    ligne.role === 'eleve' &&
+    ligne.groupes.length === 0 &&
+    ECARTS_ACCEPTES[ligne.identifiant] === undefined
+  ) {
     anomalies.push(`ligne ${ligne.ligne} : ${ligne.identifiant} est élève sans aucun groupe`);
   }
-  if (ligne.matieres.length > 0 && !ROLES_NOTANTS.has(ligne.role)) {
+  if (
+    ligne.matieres.length > 0 &&
+    !ROLES_NOTANTS.has(ligne.role) &&
+    ECARTS_ACCEPTES[ligne.identifiant] === undefined
+  ) {
     anomalies.push(
       `ligne ${ligne.ligne} : ${ligne.identifiant} est ${ligne.role} mais porte la matière ` +
         `« ${ligne.matieres.join(', ')} » — il ne pourra pas saisir de note`,
@@ -162,6 +179,17 @@ for (const code of codesGroupes) {
   const membres = eleves.filter((ligne) => ligne.groupes[0] === code);
   const pp = PROFS_PRINCIPAUX[code] ?? 'aucun';
   console.log(`  ${code.padEnd(10)} ${String(membres.length).padStart(2)} élèves   PP ${pp}`);
+}
+
+const accepteesPresentes = lignes.filter(
+  (ligne) => ECARTS_ACCEPTES[ligne.identifiant] !== undefined,
+);
+if (accepteesPresentes.length > 0) {
+  console.log('');
+  console.log('Écarts assumés :');
+  for (const ligne of accepteesPresentes) {
+    console.log(`  ${ligne.identifiant} — ${ECARTS_ACCEPTES[ligne.identifiant] ?? ''}`);
+  }
 }
 
 if (anomalies.length > 0) {
@@ -282,21 +310,40 @@ for (const service of services) {
 
 // Correction des roleId : le CSV fait foi, sauf pour les comptes qu'il ne mentionne pas.
 const utilisateurs = await db.collection('utilisateurs').get();
-const roleActuel = new Map<string, string>();
+type EtatCompte = { roleId: string; nom: string; prenom: string };
+const etatActuel = new Map<string, EtatCompte>();
 for (const document of utilisateurs.docs) {
-  roleActuel.set(document.id, String(document.data().roleId));
+  const donnees = document.data();
+  etatActuel.set(document.id, {
+    roleId: String(donnees.roleId),
+    nom: String(donnees.nom),
+    prenom: String(donnees.prenom),
+  });
 }
 
 const changements: string[] = [];
 for (const ligne of lignes) {
   const uid = uids.get(ligne.identifiant);
   if (uid === undefined) continue;
-  const avant = roleActuel.get(uid);
-  if (avant === undefined || avant === ligne.role) continue;
-  changements.push(`${ligne.identifiant} : ${avant} vers ${ligne.role}`);
-  ajouter((courant) =>
-    courant.update(db.collection('utilisateurs').doc(uid), { roleId: ligne.role }),
-  );
+  const avant = etatActuel.get(uid);
+  if (avant === undefined) continue;
+
+  const correctif: Record<string, string> = {};
+  if (avant.roleId !== ligne.role) {
+    correctif.roleId = ligne.role;
+    changements.push(`${ligne.identifiant} : rôle ${avant.roleId} vers ${ligne.role}`);
+  }
+  if (avant.nom !== ligne.nom) {
+    correctif.nom = ligne.nom;
+    changements.push(`${ligne.identifiant} : nom « ${avant.nom} » vers « ${ligne.nom} »`);
+  }
+  if (avant.prenom !== ligne.prenom) {
+    correctif.prenom = ligne.prenom;
+    changements.push(`${ligne.identifiant} : prénom « ${avant.prenom} » vers « ${ligne.prenom} »`);
+  }
+  if (Object.keys(correctif).length === 0) continue;
+
+  ajouter((courant) => courant.update(db.collection('utilisateurs').doc(uid), correctif));
 }
 
 for (const courant of lots) await courant.commit();

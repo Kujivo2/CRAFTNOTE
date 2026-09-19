@@ -66,7 +66,7 @@ export type Lecture = {
   readonly rejets: readonly string[];
 };
 
-export function lireReferentiel(chemin = 'referentiel-a-remplir.csv'): Lecture {
+export function lireReferentiel(chemin = 'classe.csv'): Lecture {
   const brut = readFileSync(chemin, 'utf8').replace(/^﻿/, '').replace(/\r\n/g, '\n');
   const [entete = '', ...corps] = brut.trim().split('\n');
 
