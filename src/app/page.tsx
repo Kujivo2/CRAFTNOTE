@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { peut } from '@/auth/peut';
+import { codesDesGroupes } from '@/data/groupes';
 import { sessionActive } from '@/data/session';
 import { profilConnecte } from '@/data/utilisateurs';
 import { MesDroits } from '@/features/accueil/mes-droits';
@@ -22,11 +23,36 @@ const LIBELLES_ROLE: Readonly<Record<string, string>> = {
   administrateur: 'Administrateur',
 };
 
+// Un eleve n'a jamais de service : la session ne les charge que pour le personnel. Lui dire
+// « aucun service » accuserait le referentiel a tort, alors que son groupe est bien la.
+function decrireRattachements(
+  session: { roleCode: string; serviceIds: readonly string[] },
+  codesGroupes: readonly string[],
+): string {
+  const groupes = codesGroupes.length === 0 ? null : codesGroupes.join(', ');
+
+  if (session.roleCode === 'eleve') {
+    return groupes === null
+      ? 'Aucun groupe : prévenez l’administrateur, vous n’apparaîtrez ni à l’appel ni au bilan.'
+      : `${groupes}.`;
+  }
+
+  const services =
+    session.serviceIds.length === 0
+      ? 'Aucun service rattaché.'
+      : `${session.serviceIds.length} service${session.serviceIds.length > 1 ? 's' : ''}.`;
+
+  if (groupes === null) return services;
+  return `${services} Professeur principal de ${groupes}.`;
+}
+
 export default async function Accueil() {
   const session = await sessionActive();
   if (session === null) redirect('/connexion');
 
   const profil = await profilConnecte(session.utilisateurId);
+  const codesGroupes = await codesDesGroupes(session.groupeIds);
+  const rattachements = decrireRattachements(session, codesGroupes);
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-8">
@@ -54,14 +80,7 @@ export default async function Accueil() {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-18">Rattachements</h2>
-        <p className="text-14 text-texte-2">
-          {session.serviceIds.length === 0
-            ? 'Aucun service : le référentiel n’est pas encore saisi.'
-            : `${session.serviceIds.length} service${session.serviceIds.length > 1 ? 's' : ''}.`}{' '}
-          {session.groupeIds.length === 0
-            ? 'Aucun groupe rattaché.'
-            : `${session.groupeIds.length} groupe${session.groupeIds.length > 1 ? 's' : ''}.`}
-        </p>
+        <p className="text-14 text-texte-2">{rattachements}</p>
       </section>
 
       {peut(session, 'droits.gerer') && (
