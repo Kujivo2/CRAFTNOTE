@@ -83,6 +83,16 @@ export default async function Accueil() {
         <p className="text-14 text-texte-2">{rattachements}</p>
       </section>
 
+      {peut(session, 'trombinoscope.voir', { groupeId: session.groupeIds[0] ?? '' }) ||
+      peut(session, 'trombinoscope.voir') ? (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-18">Consulter</h2>
+          <Link href="/trombinoscope" className="text-14 underline underline-offset-4">
+            Trombinoscope
+          </Link>
+        </section>
+      ) : null}
+
       {peut(session, 'droits.gerer') && (
         <section className="flex flex-col gap-2">
           <h2 className="text-18">Administration</h2>

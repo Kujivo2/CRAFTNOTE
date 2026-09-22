@@ -147,3 +147,50 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Feuille d'impression (9) : A4, marges correctes, navigation masquee, aucune coupure au
+   milieu d'un tableau. L'export PDF passe par l'impression du navigateur, il n'y a donc pas
+   de second rendu a maintenir. */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  /* Sur papier, le theme sombre gaspille l'encre et se lit mal. */
+  :root {
+    --cn-fond: #ffffff;
+    --cn-fond-2: #ffffff;
+    --cn-texte: #14110f;
+    --cn-texte-2: #4f4845;
+    --cn-accent: #857340;
+    --cn-alerte: #a3231c;
+    --cn-filet: #8a807b;
+  }
+
+  body {
+    background: #ffffff;
+    color: #14110f;
+  }
+
+  .impression-masquee {
+    display: none;
+  }
+
+  /* Un tableau ne se coupe pas au milieu, et son en-tete se repete a chaque page. */
+  table {
+    break-inside: auto;
+  }
+  tr,
+  li {
+    break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+    position: static;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
