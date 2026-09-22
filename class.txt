@@ -1,52 +1,52 @@
-Zoldro:
+Zoldro: 1
 -Edgar (Kikso)
 -Zack (Shoku)
 -Tyler (Evan)
 -Maddy (maiana)
 
-Yazy:
+Yazy:2
 -Bingus (mecsick)
 -Nolan (Hebradine)
 -Angelica (Rob)
 -Audry (Redrobin)
 
-Nils:
+Nils:3
 -Dingus (Spooder)
 -Eden (Moode)
 -Riju (Doc)
 -Evelyne (Whisper)
 
-Clervus:
+Clervus:4
 -Ada (Gloomy)
 -Eimi (Myn)
 -Sam (RMX)
 -Ero (Ero)
 
-Luka:
+Luka:5
 -Jake (Liliano)
 -Gabriel (Kuji)
 -Sucre (Board)
 -Rin (Eclypse)
 
-Lou:
+Lou:6
 -Eimi (Fanny)
 -Mauvine (Yunko)
 -Nate (Veyzo)
 -Theo (snoukiz)
 
-Violyyne:
+Violyyne:7
 -Olivia (Arka)
 -Blanche (Elisa)
 -Albert (Purple)
 -Jad (Moeros)
 
-Gameover:
+Gameover:8
 -Freya (meli-melo)
 -Isaac (Middle)
 -Even (Mat)
 -Moon (Moon)
 
-Nayato:
+Nayato:9
 -Isaac (Nimp)
 -Freak (Clervus)
 -Amy (Yuki
