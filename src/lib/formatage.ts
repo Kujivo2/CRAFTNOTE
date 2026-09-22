@@ -88,3 +88,18 @@ export function compteFr(
   if (nombreDe === 0) return `${genre === 'feminin' ? 'aucune' : 'aucun'} ${singulier}`;
   return `${nombreDe} ${nombreDe === 1 ? singulier : pluriel}`;
 }
+
+// Lecture d'une note tapee par un professeur : « 14,5 », « 14.5 », « 14 », « » ou du bruit.
+// La virgule ET le point sont acceptes : on saisit au pave numerique, qui produit un point.
+//
+// Rend `null` pour une saisie vide, et `undefined` pour une saisie qu'on ne sait pas lire --
+// les deux ne se confondent jamais, l'une efface la note et l'autre doit etre refusee.
+export function noteEnCentiemes(texte: string): number | null | undefined {
+  const propre = texte.trim().replace(',', '.');
+  if (propre === '') return null;
+  if (!/^\d+(\.\d{1,2})?$/.test(propre)) return undefined;
+
+  // Passage par les centiemes sans jamais manipuler le flottant plus loin que cette ligne :
+  // Math.round ferme la porte au 14.499999999999998 (4.1).
+  return Math.round(Number(propre) * 100);
+}

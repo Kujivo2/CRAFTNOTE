@@ -107,6 +107,71 @@ export const schemaConfig = z.object({
   afficherRang: z.boolean(),
 });
 
+export const STATUTS_NOTE = ['notee', 'absent', 'dispense', 'nonRendu', 'nonNotee'] as const;
+
+export const TYPES_EVALUATION = [
+  'devoirSurveille',
+  'interrogation',
+  'oral',
+  'pratique',
+  'projet',
+] as const;
+
+export const schemaEvaluation = z.object({
+  serviceId: z.string().min(1),
+  periodeId: z.string().min(1),
+  titre: z.string().min(1).max(120),
+  // Jour de RP, « 2026-09-25 ». Aucune validation n'interdit une date passee (1).
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  // Bareme et valeurs en CENTIEMES entiers : jamais de flottant binaire (4.1).
+  // 20 s'ecrit 2000, 14,50 s'ecrit 1450.
+  baremeCentiemes: z.number().int().positive(),
+  coefficient: z.number().positive(),
+  type: z.enum(TYPES_EVALUATION),
+  // Rien n'est visible de l'eleve avant la publication (3).
+  publiee: z.boolean(),
+  facultative: z.boolean(),
+  commentaireGeneral: z.string().max(1000),
+  creeeLe: z.string(),
+  // Denormalise : le releve d'un groupe ne doit pas relire chaque service.
+  groupeId: z.string().min(1),
+  matiereNom: z.string().min(1),
+});
+
+// Identifiant `{evaluationId}__{eleveId}` : c'est le seul mecanisme d'unicite disponible (6.2).
+// `eleveId` est REPETE dans le document : Firestore ne sait pas interroger un identifiant par
+// suffixe, donc sans ce champ le releve d'un eleve serait inexprimable.
+export const schemaNote = z.object({
+  evaluationId: z.string().min(1),
+  eleveId: z.string().min(1),
+  valeurCentiemes: z.number().int().nonnegative().nullable(),
+  statut: z.enum(STATUTS_NOTE),
+  commentaire: z.string().max(500),
+  // Une note peut etre retiree du calcul tout en restant visible (4.1).
+  priseEnCompte: z.boolean(),
+  eleveNom: z.string().min(1),
+  groupeId: z.string().min(1),
+  serviceId: z.string().min(1),
+  periodeId: z.string().min(1),
+});
+
+// Journal des modifications (4.6). Silencieux : aucune notification, aucun badge, personne
+// n'est prevenu. On enregistre, et on regarde a la fin.
+export const schemaEntreeJournal = z.object({
+  acteurId: z.string().min(1),
+  acteurUsurpeId: z.string().nullable(),
+  evenement: z.enum(['saisie', 'modification', 'suppression']),
+  entite: z.string().min(1),
+  entiteId: z.string().min(1),
+  eleveId: z.string().min(1),
+  evaluationId: z.string().min(1),
+  valeurAvant: z.number().int().nullable(),
+  valeurApres: z.number().int().nullable(),
+  statutAvant: z.string().nullable(),
+  statutApres: z.string().nullable(),
+  date: z.string(),
+});
+
 export const schemaEntreeAudit = z.object({
   acteurId: z.string().min(1),
   acteurUsurpeId: z.string().nullable(),
@@ -130,4 +195,7 @@ export type Niveau = z.infer<typeof schemaNiveau>;
 export type Salle = z.infer<typeof schemaSalle>;
 export type Periode = z.infer<typeof schemaPeriode>;
 export type Config = z.infer<typeof schemaConfig>;
+export type Evaluation = z.infer<typeof schemaEvaluation>;
+export type Note = z.infer<typeof schemaNote>;
+export type EntreeJournal = z.infer<typeof schemaEntreeJournal>;
 export type EntreeAudit = z.infer<typeof schemaEntreeAudit>;

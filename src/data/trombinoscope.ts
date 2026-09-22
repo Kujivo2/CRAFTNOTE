@@ -1,7 +1,8 @@
 import 'server-only';
 
 import { exigerPermission, peut } from '@/auth/peut';
-import { groupes, niveaux, profilsEleves, services, utilisateurs } from '@/firebase/collections';
+import { groupes, niveaux, profilsEleves, services } from '@/firebase/collections';
+import { elevesDuGroupe, type MembreDuGroupe } from './groupes';
 import { exigerSession } from './session';
 
 // Une fonction = une requête + son contrôle d'accès (7.3).
@@ -10,12 +11,7 @@ import { exigerSession } from './session';
 // « son groupe », un membre du personnel en portée « établissement ». Le même appel rend donc
 // un groupe à l'un et les neuf à l'autre, sans que l'écran ait à le savoir.
 
-export type MembreDuGroupe = {
-  readonly uid: string;
-  readonly prenom: string;
-  readonly nom: string;
-  readonly estDelegue: boolean;
-};
+export type { MembreDuGroupe };
 
 export type IntervenantDuGroupe = {
   readonly serviceId: string;
@@ -38,30 +34,6 @@ export type Trombinoscope = {
   readonly eleves: readonly MembreDuGroupe[];
   readonly equipe: readonly IntervenantDuGroupe[];
 };
-
-async function elevesDuGroupe(identifiant: string): Promise<readonly MembreDuGroupe[]> {
-  const profils = await profilsEleves().where('groupeId', '==', identifiant).get();
-  if (profils.empty) return [];
-
-  // Un groupe fait quatre documents : on les charge et on trie en mémoire (6.2).
-  const comptes = await Promise.all(
-    profils.docs.map(async (profil) => ({
-      uid: profil.id,
-      estDelegue: profil.data().estDelegue,
-      compte: (await utilisateurs().doc(profil.id).get()).data(),
-    })),
-  );
-
-  return comptes
-    .filter((entree) => entree.compte !== undefined)
-    .map((entree) => ({
-      uid: entree.uid,
-      prenom: entree.compte?.prenom ?? '',
-      nom: entree.compte?.nom ?? '',
-      estDelegue: entree.estDelegue,
-    }))
-    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
-}
 
 async function equipeDuGroupe(
   identifiant: string,

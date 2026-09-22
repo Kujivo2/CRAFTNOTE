@@ -10,7 +10,11 @@ import type { ZodType } from 'zod';
 
 import { firestore } from './admin';
 import {
+  type Config,
   type EntreeAudit,
+  type EntreeJournal,
+  type Evaluation,
+  type Note,
   type Groupe,
   type Matiere,
   type Niveau,
@@ -22,7 +26,11 @@ import {
   type Salle,
   type Service,
   type Utilisateur,
+  schemaConfig,
   schemaEntreeAudit,
+  schemaEntreeJournal,
+  schemaEvaluation,
+  schemaNote,
   schemaGroupe,
   schemaMatiere,
   schemaNiveau,
@@ -98,9 +106,24 @@ export const salles = (): CollectionReference<Salle, DocumentData> =>
 export const periodes = (): CollectionReference<Periode, DocumentData> =>
   collection('periodes', schemaPeriode);
 
+// Document unique, d'identifiant « config ».
+export const etablissement = (): CollectionReference<Config, DocumentData> =>
+  collection('etablissement', schemaConfig);
+
+export const evaluations = (): CollectionReference<Evaluation, DocumentData> =>
+  collection('evaluations', schemaEvaluation);
+
+export const notes = (): CollectionReference<Note, DocumentData> => collection('notes', schemaNote);
+
+export const journalModifications = (): CollectionReference<EntreeJournal, DocumentData> =>
+  collection('journalModifications', schemaEntreeJournal);
+
 export const auditLog = (): CollectionReference<EntreeAudit, DocumentData> =>
   collection('auditLog', schemaEntreeAudit);
 
 // L'unicite s'obtient par l'identifiant du document, seul mecanisme disponible (6.2).
+export const identifiantNote = (evaluationId: string, eleveId: string): string =>
+  `${evaluationId}__${eleveId}`;
+
 export const identifiantSurcharge = (utilisateurId: string, permissionCode: string): string =>
   `${utilisateurId}__${permissionCode}`;

@@ -9,6 +9,7 @@ import {
   dureeFr,
   heureFr,
   moyenneFr,
+  noteEnCentiemes,
   noteFr,
   pourcentageFr,
 } from './formatage';
@@ -109,5 +110,39 @@ describe('comptes', () => {
   it('accorde le singulier et le pluriel', () => {
     expect(compteFr(1, 'retard', 'retards')).toBe('1 retard');
     expect(compteFr(3, 'retard', 'retards')).toBe('3 retards');
+  });
+});
+
+describe('lecture d une note tapee', () => {
+  it('accepte la virgule et le point', () => {
+    expect(noteEnCentiemes('14,5')).toBe(1450);
+    expect(noteEnCentiemes('14.5')).toBe(1450);
+  });
+
+  it('accepte un entier et deux decimales', () => {
+    expect(noteEnCentiemes('14')).toBe(1400);
+    expect(noteEnCentiemes('14,65')).toBe(1465);
+    expect(noteEnCentiemes('0')).toBe(0);
+  });
+
+  it('rend null pour une saisie vide, ce qui efface la note', () => {
+    expect(noteEnCentiemes('')).toBeNull();
+    expect(noteEnCentiemes('   ')).toBeNull();
+  });
+
+  it('rend undefined pour ce qu on ne sait pas lire, ce qui doit etre refuse', () => {
+    expect(noteEnCentiemes('abc')).toBeUndefined();
+    expect(noteEnCentiemes('14,5,5')).toBeUndefined();
+    expect(noteEnCentiemes('-3')).toBeUndefined();
+    expect(noteEnCentiemes('14,555')).toBeUndefined();
+  });
+
+  it('ne confond jamais vide et illisible', () => {
+    expect(noteEnCentiemes('')).not.toBe(noteEnCentiemes('abc'));
+  });
+
+  it('ne laisse pas le flottant corrompre la valeur', () => {
+    expect(noteEnCentiemes('14,49')).toBe(1449);
+    expect(noteEnCentiemes('0,07')).toBe(7);
   });
 });

@@ -90,6 +90,9 @@ export default async function Accueil() {
           <Link href="/trombinoscope" className="text-14 underline underline-offset-4">
             Trombinoscope
           </Link>
+          <Link href="/notes" className="text-14 underline underline-offset-4">
+            {session.roleCode === 'eleve' ? 'Mes notes' : 'Notes'}
+          </Link>
         </section>
       ) : null}
 
